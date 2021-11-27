@@ -7,6 +7,15 @@ from zombsole.utils import distance
 DEFAULT_COLOR = 'white'
 HEALING_RANGE = 3
 
+# def is_agent(thing):
+#     thing_type = getattr(thing, "thing_type", "")
+#     return (thing_type == "agent")
+# 
+# def is_zombie(thing):
+#     return (getattr(thing, "name", "") == "zombie")
+# 
+# def is_player(thing):
+#     return not (is_agent(thing) or is_zombie(thing))
 
 class World(object):
     """World where to play the game."""
@@ -18,6 +27,23 @@ class World(object):
         self.t = -1
         self.events = []
         self.deaths = 0
+        self.zombie_deaths = 0
+        # self.player_deaths = 0
+        # self.agent_deaths = 0
+    
+    # def get_agents_health(self):
+    #     return sum([thing.life for thing in self.things.values() if isinstance(thing, Agent)])
+
+    # def get_players_health(self):
+    #     def is_player(thing):
+    #         return isinstance(thing, Player) and (not isinstance(thing, Agent))
+    #     
+    #     # return sum([thing.life for thing in self.things.values() if is_player(thing)])
+    #     ret = 0
+    #     for thing in self.things.values():
+    #         if is_player(thing):
+    #             ret += thing.life
+    #     return ret
 
     def spawn_thing(self, thing):
         """Add a thing to the world, or to the decoration layer.
@@ -92,7 +118,7 @@ class World(object):
                     event = u'invalid next_step result: %s' % repr(next_step)
                     raise Exception(event)
             except Exception as err:
-                self.event(thing, u'error with next_step: %s' % err.message)
+                self.event(thing, u'error with next_step: %s' % str(err))
                 if self.debug:
                     raise
 
@@ -128,6 +154,12 @@ class World(object):
             del self.things[thing.position]
             self.event(thing, u'died')
             self.deaths += 1
+            if getattr(thing, "name", "") == "zombie":
+                self.zombie_deaths += 1
+            # elif isinstance(thing, Agent): # Agent is a subclass of player, so must be checked first
+            #     self.agent_deaths += 1
+            # elif isinstance(thing, Player):
+            #     self.player_deaths += 1
 
     def thing_move(self, thing, destination):
         """Apply move action of a thing.
