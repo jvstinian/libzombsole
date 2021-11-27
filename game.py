@@ -17,6 +17,11 @@ def get_creator(module_name):
 
     return create_function
 
+# More or less following the approach for player and rules
+def create_agent(agent_id, rules_name, objectives):
+    from weapons import Rifle
+    creator = get_creator('players.agent')
+    return creator(agent_id, Rifle(), rules_name, objectives)
 
 def create_player(name, rules_name, objectives):
     creator = get_creator('players.' + name)
@@ -35,7 +40,7 @@ class Rules(object):
 
     def players_alive(self):
         """Are there any alive players?"""
-        for player in self.game.players:
+        for player in (self.game.players + self.game.agents):
             if player.life > 0:
                 return True
         return False
@@ -120,12 +125,14 @@ class Game(object):
     def __init__(self, rules_name, player_names, map_, initial_zombies=0,
                  minimum_zombies=0, docker_isolator=False, debug=False,
                  isolator_port=8000, use_basic_icons=False, use_arduino=False,
-                 arduino_device='/dev/ttyACM0', arduino_bauds=9600):
+                 arduino_device='/dev/ttyACM0', arduino_bauds=9600,
+                 agent_ids = []):
         self.players = []
 
         self.rules_name = rules_name
         self.rules = get_creator('rules.' + rules_name)(self)
         self.map = map_
+        self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
         self.docker_isolator = docker_isolator
         self.isolator_port = isolator_port
@@ -135,27 +142,65 @@ class Game(object):
         self.arduino_device = arduino_device
         self.arduino_bauds = arduino_bauds
 
-        self.world = World(self.map.size, debug=debug)
+        self.player_names = player_names
+        self.agent_ids = agent_ids
+        
+        self.thing_labels = {
+            '@': 1,
+            '=': 2,
+            '*': 3,
+            '#': 4,
+            'x': 5,
+            'P': 6,
+            'A': 7,
+        }
+        self.weapon_labels = {
+            'ZombieClaws': 1,
+            'Knife': 10,
+            'Axe': 11,
+            'Gun': 12,
+            'Rifle': 13,
+            'Shotgun': 14
+        }
+
+        # Initialize world, players, agents
+        self.__initialize_world__()
+
+    def __initialize_world__(self):
+        self.world = World(self.map.size, debug=self.debug)
 
         for thing in self.map.things:
             self.world.spawn_thing(thing)
 
-        if docker_isolator:
+        if self.docker_isolator:
             from isolation.players_client import create_player_client
-            self.players = [create_player_client(name, rules_name,
+            self.players = [create_player_client(name, self.rules_name,
                                                  self.map.objectives,
                                                  self.isolator_port)
-                            for name in player_names]
+                            for name in self.player_names]
         else:
-            self.players = [create_player(name, rules_name,
+            self.players = [create_player(name, self.rules_name,
                                           self.map.objectives)
-                            for name in player_names]
+                            for name in self.player_names]
+
+        if self.agent_ids:
+            self.agents = [create_agent(agent_id, self.rules_name, self.map.objectives)
+                           for agent_id in self.agent_ids]
+        else:
+            self.agents = []
 
         self.spawn_players()
-        self.spawn_zombies(initial_zombies)
+        self.spawn_agents()
+        self.spawn_zombies(self.initial_zombies)
 
         if self.use_arduino:
             self.initialize_arduino()
+
+    def get_agents_health(self):
+        return sum([thing.life for thing in self.agents])
+
+    def get_players_health(self):
+        return sum([thing.life for thing in self.players])
 
     def initialize_arduino(self):
         '''Initialize serial connection with arduino screen.'''
@@ -167,12 +212,23 @@ class Game(object):
         """Spawn players using the provided player create functions."""
         self.world.spawn_in_random(self.players, self.map.player_spawns)
 
+    def spawn_agents(self):
+        """Spawn agents using the provided player create functions."""
+        self.world.spawn_in_random(self.agents, self.map.player_spawns)
+
     def spawn_zombies(self, count):
         """Spawn N zombies in the world."""
         zombies = [Zombie() for _ in range(count)]
         self.world.spawn_in_random(zombies,
                                    self.map.zombie_spawns,
                                    fail_if_cant=False)
+
+    def spawn_zombies_to_maintain_minimum(self):
+        # maintain the flow of zombies if necessary
+        zombies = [thing for thing in self.world.things.values()
+                    if isinstance(thing, Zombie)]
+        if len(zombies) < self.minimum_zombies:
+            self.spawn_zombies(self.minimum_zombies - len(zombies))
 
     def position_draw(self, position):
         """Get the string to draw for a given position of the world."""
@@ -188,6 +244,48 @@ class Game(object):
             return colored(icon, thing.color)
         else:
             return u' '
+
+    def encode_position_as_channels(self, position):
+        """Get the character to draw for a given position of the world."""
+        # decorations first, then things over them
+        thing = (self.world.things.get(position) or
+                 self.world.decoration.get(position))
+
+        if thing is not None:
+            life = getattr(thing, 'life', 0)
+            weapon = getattr(thing, 'weapon', None)
+            weapon_name = weapon.name if weapon is not None else 'none'
+            weapon_code = self.weapon_labels.get(weapon_name, 0)
+            return [
+                ord(thing.icon_basic),
+                life,
+                weapon_code
+            ]
+        else:
+            return [0, 0, 0]
+    
+    def encode_position_simple(self, position):
+        """Get the character to draw for a given position of the world."""
+        # decorations first, then things over them
+        thing = (self.world.things.get(position) or
+                 self.world.decoration.get(position))
+
+        if thing is not None:
+            scaled_life = 16*getattr(thing, 'life', 0)//100
+            thing_code = self.thing_labels.get(thing.icon_basic, 0)
+            weapon = getattr(thing, 'weapon', None)
+            weapon_name = weapon.name if weapon is not None else 'none'
+            weapon_code = self.weapon_labels.get(weapon_name, 0)
+            return 16*16*thing_code + 16*weapon_code + scaled_life
+        else:
+            return 0 
+    
+    def encode_world_simple(self):
+        """Render the world as an array of characters."""
+        return [
+            [self.encode_position_simple((x, y)) for x in range(self.world.size[0])]
+            for y in range(self.world.size[1])
+        ]
 
     def play(self, frames_per_second=2.0):
         """Game main loop, ending in a game result with description."""
@@ -234,7 +332,55 @@ class Game(object):
             data = data + chr(1) * 2
         self.arduino_serial.write(data)
 
+    def draw_world(self):
+        """Draw the world."""
+        screen = ''
+
+        # print the world
+        screen += '\n'.join(u''.join(self.position_draw((x, y))
+                                     for x in range(self.world.size[0]))
+                            for y in range(self.world.size[1]))
+
+        # game stats
+        screen += '\nticks: %i deaths: %i' % (self.world.t, self.world.deaths)
+
+        # print player stats
+        players = sorted(self.agents, key=lambda x: x.agent_id) + sorted(self.players, key=lambda x: x.name)
+        for player in players:
+            try:
+                weapon_name = player.weapon.name
+            except:
+                weapon_name = u'unarmed'
+
+            if player.life > 0:
+                # a small "health bar" with unicode chars, from 0 to 10 chars
+                life_chars_count = int((10.0 / player.MAX_LIFE) * player.life)
+                life_chars = life_chars_count * u'\u2588'
+                no_life_chars = (10 - life_chars_count) * u'\u2591'
+                life_bar = u'\u2665 %s%s' % (life_chars, no_life_chars)
+            else:
+                life_bar = u'\u2620 [dead]'
+
+            player_stats = u'%s %s <%i %s %s>: %s' % (life_bar,
+                                                      player.name,
+                                                      player.life,
+                                                      str(player.position),
+                                                      weapon_name,
+                                                      player.status or u'-')
+
+            screen += '\n' + colored(player_stats, player.color)
+
+        # print events (of last step) for debugging
+        if self.debug:
+            screen += u'\n'
+            screen += u'\n'.join([colored(u'%s: %s' % (thing.name, event),
+                                          thing.color)
+                                  for t, thing, event in self.world.events
+                                  if t == self.world.t])
+        return screen.encode('utf-8', errors='ignore')
+
     def draw(self):
+        # TODO: Call draw_world()
         """Draw the world."""
         screen = ''
 
@@ -280,7 +426,7 @@ class Game(object):
                                   for t, thing, event in self.world.events
                                   if t == self.world.t])
         os.system('clear')
-        print(screen)
+        print(screen.encode('utf-8', errors='ignore'))
 
         # if using arduino screen, send data
         if self.use_arduino:

@@ -108,7 +108,7 @@ class Zombie(FightingThing):
 class Player(FightingThing):
     MAX_LIFE = 100
     ICON = u'\u2A30'
-    ICON_BASIC = u'x'
+    ICON_BASIC = u'P'
 
     def __init__(self, name, color, position=None, weapon=None, rules=None,
                  objectives=None, icon=None):
