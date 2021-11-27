@@ -21,7 +21,7 @@ def get_creator(module_name):
 # More or less following the approach for player and rules
 def create_agent(agent_id, rules_name, objectives):
     from weapons import Rifle
-    creator = get_creator('players.agent')
+    creator = get_creator('zombsole.players.agent')
     return creator(agent_id, Rifle(), rules_name, objectives)
 
 def create_player(name, rules_name, objectives):
@@ -132,7 +132,7 @@ class Game(object):
         self.arduino_serial = None
 
         self.rules_name = rules_name
-        self.rules = get_creator('rules.' + rules_name)(self)
+        self.rules = get_creator('zombsole.rules.' + rules_name)(self)
         self.map = map_
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
