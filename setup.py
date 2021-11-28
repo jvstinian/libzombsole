@@ -65,7 +65,7 @@ setup(
     # installed, so they must be valid existing projects.
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
-    # https://packaging.python.org/en/latest/requirements.html
+    # https://caremad.io/posts/2013/07/setup-vs-requirement/
     install_requires=[
         "termcolor", 
         "docopt"
