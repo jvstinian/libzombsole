@@ -13,12 +13,14 @@ To install ``zombsole`` as a python package, the following
 command can be used: 
 
 .. code-block:: bash
+
     pip install git+https://github.com/jvstinian/zombsole.git@jvstinian-extensions
 
 For convenience, an executable script is also installed, which 
 can be run using 
 
 .. code-block:: bash
+
     zombsole [ARGUMENTS]
 
 A new branch ``jvstinian-extensions`` was created off master, 
