@@ -4,6 +4,7 @@
 
 import io
 from os.path import dirname, join
+from zombsole import __version__
 
 # Always prefer setuptools over distutils
 from setuptools import find_packages, setup
@@ -19,7 +20,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="0.3.0",
+    version=__version__,
     description="zombsole is a programming game, where player bots cooperate against zombie hordes",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
