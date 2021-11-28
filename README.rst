@@ -2,6 +2,7 @@ Changes in this fork
 ====================
 
 This fork includes 
+
 * the refactorization of the application into a python package, 
   which was largely completed in a branch within the original 
   repo, with the addition of a setup.py file included in this 
@@ -10,11 +11,13 @@ This fork includes
 
 To install ``zombsole`` as a python package, the following 
 command can be used: 
+
 .. code-block:: bash
     pip install git+https://github.com/jvstinian/zombsole.git@jvstinian-extensions
 
 For convenience, an executable script is also installed, which 
 can be run using 
+
 .. code-block:: bash
     zombsole [ARGUMENTS]
 
