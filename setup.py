@@ -19,7 +19,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="0.1.0",
+    version="0.2.0",
     description="zombsole is a programming game, where player bots cooperate against zombie hordes",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
@@ -84,9 +84,10 @@ setup(
     #
     # If using Python 2.6 or earlier, then these have to be included in
     # MANIFEST.in as well.
-    # package_data={  # Optional
-    #     'sample': ['package_data.dat'],
-    # },
+    package_data={  # Optional
+        "": ["*.ino"], 
+        "zombsole": ["maps/*"],
+    },
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
