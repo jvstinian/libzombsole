@@ -19,7 +19,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="0.2.0",
+    version="0.3.0",
     description="zombsole is a programming game, where player bots cooperate against zombie hordes",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",

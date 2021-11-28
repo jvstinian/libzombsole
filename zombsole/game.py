@@ -20,7 +20,7 @@ def get_creator(module_name):
 
 # More or less following the approach for player and rules
 def create_agent(agent_id, rules_name, objectives):
-    from weapons import Rifle
+    from zombsole.weapons import Rifle
     creator = get_creator('zombsole.players.agent')
     return creator(agent_id, Rifle(), rules_name, objectives)
 
