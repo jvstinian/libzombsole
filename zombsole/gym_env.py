@@ -6,7 +6,7 @@ from gym.core import Env
 from gym.spaces.discrete import Discrete
 # from gym import error
 # from gym.utils import closer
-from game import Game, Map
+from zombsole.game import Game, Map
 import time
 import numpy as np
 
