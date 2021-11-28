@@ -71,7 +71,7 @@ class ZombsoleGymEnv(Game):
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
                  minimum_zombies=0, debug=False):
-        map_file = path.join('maps', map_name)
+        map_file = path.join('zombsole/maps', map_name)
         map_ = Map.from_file(map_file)
 
         super(ZombsoleGymEnv, self).__init__(
