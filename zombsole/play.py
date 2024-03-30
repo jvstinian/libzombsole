@@ -98,7 +98,7 @@ def play():
 
         map_name = arguments['-m']
         if map_name:
-            map_file = path.join('zombsole/maps', map_name)
+            map_file = path.join(path.dirname(__file__), 'maps', map_name)
             map_ = Map.from_file(map_file)
 
             if size:
