@@ -379,7 +379,7 @@ class Game(object):
                                           thing.color)
                                   for t, thing, event in self.world.events
                                   if t == self.world.t])
-        return screen.encode('utf-8', errors='ignore')
+        return screen # screen.encode('utf-8', errors='ignore') # TODO: cleanup
 
     def draw(self):
         # TODO: Call draw_world()
@@ -428,7 +428,7 @@ class Game(object):
                                   for t, thing, event in self.world.events
                                   if t == self.world.t])
         os.system('clear')
-        print(screen.encode('utf-8', errors='ignore'))
+        print(screen) # screen.encode('utf-8', errors='ignore') # TODO: cleanup
 
         # if using arduino screen, send data
         if self.use_arduino:
