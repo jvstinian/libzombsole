@@ -161,8 +161,11 @@ class ZombsoleGymEnv(Game):
             done = True
         
         info = {}
+
+        # A new output is needed in newer versions of gym
+        truncated = False
             
-        return observation, reward, done, info
+        return observation, reward, done, truncated, info
 
 
     def reset(self):
