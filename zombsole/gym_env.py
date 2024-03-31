@@ -68,7 +68,7 @@ class ZombsoleGymEnv(Game):
 
     # Set these in ALL subclasses
     action_space = Discrete(len(game_actions))
-    observation_space = Box(low=0, high=8*16*16, shape=(1, self.world.size[0], self.world.size[1]), dtype=np.int32)
+    # observation_space = Box(low=0, high=8*16*16, shape=(1, self.world.size[0], self.world.size[1]), dtype=np.int32)
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
                  minimum_zombies=0, debug=False):
@@ -83,6 +83,8 @@ class ZombsoleGymEnv(Game):
             arduino_device='/dev/ttyACM0', arduino_bauds=9600,
             agent_ids = [agent_id]
         )
+        # Does this work?
+        self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.world.size[0], self.world.size[1]), dtype=np.int32)
 
     def get_observation(self):
         # TODO: make a method for retrieving state
