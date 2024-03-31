@@ -3,6 +3,7 @@
 from os import path, system
 # import gym
 from gym.core import Env
+from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 # from gym import error
 # from gym.utils import closer
@@ -67,7 +68,7 @@ class ZombsoleGymEnv(Game):
 
     # Set these in ALL subclasses
     action_space = Discrete(len(game_actions))
-    observation_space = None
+    observation_space = Box(low=0, high=8*16*16, shape=(1, self.world.size[0], self.world.size[1]), dtype=np.int32)
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
                  minimum_zombies=0, debug=False):
@@ -149,7 +150,7 @@ class ZombsoleGymEnv(Game):
         if frames_per_second is not None:
             time.sleep(1.0 / frames_per_second)
         reward = (zombie_deaths_1 - zombie_deaths_0) # \
-        #          - 10.0*(players_health_1 - players_health_0)/100.0 \
+        #          + 1.0*(min(players_health_1 - players_health_0, 0.0))/100.0 \
         #          - (agents_health_1 - agents_health_0)/100.0
 
         done = False
