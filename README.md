@@ -22,6 +22,6 @@ can be run using
 # Additional Documentation
 
 The original documentation for the project can be found in this repo at 
-[libzombsole/README.rst](https://github.com/jvstinian/libzombsole/blob/master/documentation/README.rst)
+[libzombsole/README.rst](./documentation/README.rst)
 or in the [original repo](https://github.com/fisadev/zombsole/blob/master/README.rst). 
 
