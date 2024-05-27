@@ -124,8 +124,8 @@ class Game(object):
        to stop, importing map data, drawing each update, etc.
     """
     def __init__(self, rules_name, player_names, map_, initial_zombies=0,
-                 minimum_zombies=0, docker_isolator=False, debug=False,
-                 isolator_port=8000, use_basic_icons=False, use_arduino=False,
+                 minimum_zombies=0, debug=False,
+                 use_basic_icons=False, use_arduino=False,
                  arduino_device='/dev/ttyACM0', arduino_bauds=9600,
                  agent_ids = []):
         self.players = []
@@ -136,8 +136,6 @@ class Game(object):
         self.map = map_
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
-        self.docker_isolator = docker_isolator
-        self.isolator_port = isolator_port
         self.debug = debug
         self.use_basic_icons = use_basic_icons
         self.use_arduino = use_arduino
@@ -174,16 +172,9 @@ class Game(object):
         for thing in self.map.things:
             self.world.spawn_thing(thing)
 
-        if self.docker_isolator:
-            from zombsole.isolation.players_client import create_player_client
-            self.players = [create_player_client(name, self.rules_name,
-                                                 self.map.objectives,
-                                                 self.isolator_port)
-                            for name in self.player_names]
-        else:
-            self.players = [create_player(name, self.rules_name,
-                                          self.map.objectives)
-                            for name in self.player_names]
+        self.players = [create_player(name, self.rules_name,
+                                      self.map.objectives)
+                        for name in self.player_names]
 
         if self.agent_ids:
             self.agents = [create_agent(agent_id, self.rules_name, self.map.objectives)
