@@ -23,11 +23,6 @@ can be run using
 
     zombsole [ARGUMENTS]
 
-A new branch ``jvstinian-extensions`` was created off master, 
-and contains all the changes in this fork.  
-The additions for the gym environment have also been included in 
-the ``tabo-packaging-refactor`` branch.
-
 Zombsole
 ========
 
