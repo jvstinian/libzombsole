@@ -79,8 +79,7 @@ class ZombsoleGymEnv(Game):
         super(ZombsoleGymEnv, self).__init__(
             rules_name, player_names, map_, initial_zombies=initial_zombies,
             minimum_zombies=minimum_zombies, debug=debug,
-            use_basic_icons=True, use_arduino=False,
-            arduino_device='/dev/ttyACM0', arduino_bauds=9600,
+            use_basic_icons=True,
             agent_ids = [agent_id]
         )
         # Does this work?
