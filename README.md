@@ -2,7 +2,10 @@
 
 This project is a fork of [fisadev's zombsole](https://github.com/fisadev/zombsole). 
 The reason for this fork is to adapt zombsole from a programming game to 
-a reinforcement learning environment. 
+a reinforcement learning environment.  
+The author of this repo chose to mirror the original repo 
+so as to give credit to the original contributors by preserving 
+the commit history. 
 
 We make some other changes as well, including refactoring the code 
 to be a python package that can be installed using `pip`. 
