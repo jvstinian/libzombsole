@@ -22,8 +22,8 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=__version__,
     description="zombsole is a programming game, where player bots cooperate against zombie hordes",
-    long_description=read("README.rst"),
-    long_description_content_type="text/x-rst",
+    long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     url="https://github.com/fisadev/zombsole",
     # This should be your name or the name of the organization which owns the project.
     author="Juan Pedro Fisanotti",
