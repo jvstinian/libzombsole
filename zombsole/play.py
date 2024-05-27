@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-"""Zomsole game runner.
+"""Zombsole game runner.
 
 Usage:
     ./play.py --help
@@ -8,10 +8,11 @@ Usage:
     ./play.py list_rules
     ./play.py list_maps
 
-    GAME:     Should be the name of a type of game. Use list_rules to see a complete list.
+    GAME:     Should be the name of a type of game. Use list_rules to
+              see a complete list.
     PLAYERS:  Should be a list with the structure playerA,playerB,playerC,...
-              You can also specify how much instances of each player, like this:
-              playerA:3,playerB,playerC:10,...
+              You can also specify how much instances of each player, like
+              this: playerA:3,playerB,playerC:10,...
 
 Options:
     -h --help            Show this help.
@@ -19,21 +20,24 @@ Options:
                          Use list_maps to list available maps.
     -s SIZE              The size of the world. Format: COLUMNSxROWS
     -z INITIAL_ZOMBIES   The initial amount of zombies [default: 0]
-    -n MINIMUM_ZOMBIES   The minimum amount of zombies at all times [default: 0]
-    -d                   Debug mode (lots of extra info, and step by step game play)
+    -n MINIMUM_ZOMBIES   The minimum amount of zombies at all times
+                         [default: 0]
+    -d                   Debug mode (lots of extra info, and step by
+                         step game play)
     -f MAX_FRAMES        Maximum frames per second [default: 2].
-    -i                   Isolate the players process using docker, to prevent hacks to
-                         the world (you will need docker installed for this to work,
-                         and the isolator built and running. See the project docs for
-                         more info).
-    -p ISOLATOR_PORT     The ISOLATOR_PORT is the port on which the isolator is
-                         running [default: 8000].
-    -b                   Use basic icons if you have trouble with the normal icons.
+    -i                   Isolate the players process using docker, to
+                         prevent hacks to the world (you will need docker
+                         installed for this to work, and the isolator built
+                         and running. See the project docs for more info).
+    -p ISOLATOR_PORT     The ISOLATOR_PORT is the port on which the
+                         isolator is running [default: 8000].
+    -b                   Use basic icons if you have trouble with the
+                         normal icons.
     -a                   Use external arduino screen.
-    -v ARDUINO_DEVICE    When using arduino screen, the device path of the serial
-                         connection [default: /dev/ttyACM0]
-    -u ARDUINO_BAUDS     When using arduino screen, the bauds of the serial
-                         connection [default: 9600]
+    -v ARDUINO_DEVICE    When using arduino screen, the device path of
+                         the serial connection [default: /dev/ttyACM0]
+    -u ARDUINO_BAUDS     When using arduino screen, the bauds of the
+                         serial connection [default: 9600]
 
 list_rules:
     Will list available game rules.
@@ -47,7 +51,7 @@ from os import path, listdir
 
 from docopt import docopt
 
-from game import Game, Map
+from zombsole.game import Game, Map
 
 
 def play():
@@ -94,7 +98,7 @@ def play():
 
         map_name = arguments['-m']
         if map_name:
-            map_file = path.join('maps', map_name)
+            map_file = path.join(path.dirname(__file__), 'maps', map_name)
             map_ = Map.from_file(map_file)
 
             if size:

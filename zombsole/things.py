@@ -1,10 +1,10 @@
 # coding: utf-8
 import random
 
-from core import Thing, FightingThing
-from utils import (closest, distance, possible_moves, adjacent_positions,
-                   sort_by_distance)
-from weapons import ZombieClaws, Knife, Axe, Gun, Rifle, Shotgun
+from zombsole.core import Thing, FightingThing
+from zombsole.utils import (
+    closest, distance, possible_moves, adjacent_positions, sort_by_distance)
+from zombsole.weapons import ZombieClaws, Knife, Axe, Gun, Rifle, Shotgun
 
 
 class Box(Thing):
@@ -91,8 +91,8 @@ class Zombie(FightingThing):
                     action = 'move', best_position
                 else:
                     # if blocked by obstacles, try to break them
-                    adjacent = sort_by_distance(target,
-                                                 adjacent_positions(self))
+                    adjacent = sort_by_distance(
+                        target, adjacent_positions(self))
                     for position in adjacent:
                         thing = things.get(position)
                         if isinstance(thing, (Box, Wall)):
@@ -108,7 +108,7 @@ class Zombie(FightingThing):
 class Player(FightingThing):
     MAX_LIFE = 100
     ICON = u'\u2A30'
-    ICON_BASIC = u'x'
+    ICON_BASIC = u'P'
 
     def __init__(self, name, color, position=None, weapon=None, rules=None,
                  objectives=None, icon=None):
