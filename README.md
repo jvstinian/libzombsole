@@ -12,14 +12,14 @@ to be a python package that can be installed using `pip`.
 To install ``zombsole`` as a python package, the following 
 command can be used: 
 
-    pip install git+https://github.com/jvstinian/zombsole.git@jvstinian-extensions
+    pip install git+https://github.com/jvstinian/libzombsole.git
 
 For convenience, an executable script is also installed, which 
 can be run using 
 
     zombsole [ARGUMENTS]
 
-# Additional Documentation
+# Zombsole Documentation
 
 The original documentation for the project can be found in this repo at 
 [libzombsole/README.rst](./documentation/README.rst)
