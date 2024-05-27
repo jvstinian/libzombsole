@@ -4,7 +4,7 @@
 
 Usage:
     ./play.py --help
-    ./play.py RULES PLAYERS [-m MAP] [-s SIZE] [-z INITIAL_ZOMBIES] [-n MINIMUM_ZOMBIES] [-d] [-i [-p ISOLATOR_PORT ]] [-b] [-f MAX_FRAMES] [-a [-v ARDUINO_DEVICE] [-u ARDUINO_BAUDS]]
+    ./play.py RULES PLAYERS [-m MAP] [-s SIZE] [-z INITIAL_ZOMBIES] [-n MINIMUM_ZOMBIES] [-d] [-b] [-f MAX_FRAMES]
     ./play.py list_rules
     ./play.py list_maps
 
@@ -25,19 +25,8 @@ Options:
     -d                   Debug mode (lots of extra info, and step by
                          step game play)
     -f MAX_FRAMES        Maximum frames per second [default: 2].
-    -i                   Isolate the players process using docker, to
-                         prevent hacks to the world (you will need docker
-                         installed for this to work, and the isolator built
-                         and running. See the project docs for more info).
-    -p ISOLATOR_PORT     The ISOLATOR_PORT is the port on which the
-                         isolator is running [default: 8000].
     -b                   Use basic icons if you have trouble with the
                          normal icons.
-    -a                   Use external arduino screen.
-    -v ARDUINO_DEVICE    When using arduino screen, the device path of
-                         the serial connection [default: /dev/ttyACM0]
-    -u ARDUINO_BAUDS     When using arduino screen, the bauds of the
-                         serial connection [default: 9600]
 
 list_rules:
     Will list available game rules.
@@ -73,14 +62,9 @@ def play():
         rules_name = arguments['RULES']
         initial_zombies = int(arguments['-z'])
         minimum_zombies = int(arguments['-n'])
-        docker_isolator = arguments['-i']
         debug = arguments['-d']
-        isolator_port = int(arguments['-p'])
         use_basic_icons = arguments['-b']
         max_frames = int(arguments['-f'])
-        use_arduino = arguments['-a']
-        arduino_device = arguments['-v']
-        arduino_bauds = int(arguments['-u'])
 
         player_names = []
         for player_part in arguments['PLAYERS'].split(','):
@@ -120,13 +104,8 @@ def play():
                  map_=map_,
                  initial_zombies=initial_zombies,
                  minimum_zombies=minimum_zombies,
-                 docker_isolator=docker_isolator,
-                 isolator_port=isolator_port,
                  debug=debug,
-                 use_basic_icons=use_basic_icons,
-                 use_arduino=use_arduino,
-                 arduino_device=arduino_device,
-                 arduino_bauds=arduino_bauds)
+                 use_basic_icons=use_basic_icons)
         g.play(max_frames)
 
 

@@ -124,25 +124,18 @@ class Game(object):
        to stop, importing map data, drawing each update, etc.
     """
     def __init__(self, rules_name, player_names, map_, initial_zombies=0,
-                 minimum_zombies=0, docker_isolator=False, debug=False,
-                 isolator_port=8000, use_basic_icons=False, use_arduino=False,
-                 arduino_device='/dev/ttyACM0', arduino_bauds=9600,
+                 minimum_zombies=0, debug=False,
+                 use_basic_icons=False,
                  agent_ids = []):
         self.players = []
-        self.arduino_serial = None
 
         self.rules_name = rules_name
         self.rules = get_creator('zombsole.rules.' + rules_name)(self)
         self.map = map_
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
-        self.docker_isolator = docker_isolator
-        self.isolator_port = isolator_port
         self.debug = debug
         self.use_basic_icons = use_basic_icons
-        self.use_arduino = use_arduino
-        self.arduino_device = arduino_device
-        self.arduino_bauds = arduino_bauds
 
         self.player_names = player_names
         self.agent_ids = agent_ids
@@ -174,16 +167,9 @@ class Game(object):
         for thing in self.map.things:
             self.world.spawn_thing(thing)
 
-        if self.docker_isolator:
-            from zombsole.isolation.players_client import create_player_client
-            self.players = [create_player_client(name, self.rules_name,
-                                                 self.map.objectives,
-                                                 self.isolator_port)
-                            for name in self.player_names]
-        else:
-            self.players = [create_player(name, self.rules_name,
-                                          self.map.objectives)
-                            for name in self.player_names]
+        self.players = [create_player(name, self.rules_name,
+                                      self.map.objectives)
+                        for name in self.player_names]
 
         if self.agent_ids:
             self.agents = [create_agent(agent_id, self.rules_name, self.map.objectives)
@@ -195,20 +181,11 @@ class Game(object):
         self.spawn_agents()
         self.spawn_zombies(self.initial_zombies)
 
-        if self.use_arduino:
-            self.initialize_arduino()
-
     def get_agents_health(self):
         return sum([thing.life for thing in self.agents])
 
     def get_players_health(self):
         return sum([thing.life for thing in self.players])
-
-    def initialize_arduino(self):
-        """Initialize serial connection with arduino screen."""
-        from serial import Serial
-        self.arduino_serial = Serial(self.arduino_device,
-                                     self.arduino_bauds)
 
     def spawn_players(self):
         """Spawn players using the provided player create functions."""
@@ -313,12 +290,6 @@ class Game(object):
             if self.rules.game_ended():
                 won, description = self.rules.game_won()
 
-                if self.use_arduino:
-                    if won:
-                        self.arduino('g', True)  # "gwin!!"
-                    else:
-                        self.arduino('l', True)  # lose
-
                 print('')
                 if won:
                     print(colored(u'WIN! ', 'green'))
@@ -327,12 +298,6 @@ class Game(object):
                 print(description)
 
                 return won, description
-
-    def arduino(self, data, add_end_chars=False):
-        """Send an order to the arduino screen."""
-        if add_end_chars:
-            data += chr(1) * 2
-        self.arduino_serial.write(data)
 
     def draw_world(self):
         """Draw the world."""
@@ -430,14 +395,3 @@ class Game(object):
         os.system('clear')
         print(screen) # screen.encode('utf-8', errors='ignore') # TODO: cleanup
 
-        # if using arduino screen, send data
-        if self.use_arduino:
-            for thing in self.world.things.values():
-                if isinstance(thing, Player):
-                    icon = 'p'
-                else:
-                    icon = thing.__class__.__name__[0].lower()
-
-                self.arduino(
-                    icon + chr(thing.position[0]) + chr(thing.position[1]))
-            self.arduino('r', True)
