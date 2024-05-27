@@ -24,10 +24,10 @@ setup(
     description="zombsole is a programming game, where player bots cooperate against zombie hordes",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
-    url="https://github.com/fisadev/zombsole",
+    url="https://github.com/jvstinian/libzombsole",
     # This should be your name or the name of the organization which owns the project.
-    author="Juan Pedro Fisanotti",
-    author_email="fisadev@gmail.com",
+    author="Justin Smith",
+    author_email="jvstinian@gmail.com",
     # Classifiers help users find your project by categorizing it.
     # For a list of valid classifiers, see https://pypi.org/classifiers/
     classifiers=[  # Optional
@@ -44,7 +44,7 @@ setup(
     # project page. What does your project relate to?
     #
     # Note that this is a string of words separated by whitespace, not a list.
-    keywords="game programming_game",  
+    keywords="game programming_game reinforcement_learning",  
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
     #
@@ -108,7 +108,7 @@ setup(
         ],
     },
     project_urls={
-        "Bug Reports": "https://github.com/fisadev/zombsole/issues",
-        "Source": "https://github.com/fisadev/zombsole",
+        "Bug Reports": "https://github.com/jvstinian/libzombsole/issues",
+        "Source": "https://github.com/jvstinian/libzombsole",
     },
 )
