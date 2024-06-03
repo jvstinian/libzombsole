@@ -2,6 +2,14 @@ FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update
+
+# locale
+RUN apt-get -y install locales
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
 RUN apt-get install -y python-pip
 
 # added before the full folder, so caching of pip installation
