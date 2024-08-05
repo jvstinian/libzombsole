@@ -69,7 +69,9 @@ setup(
     # https://caremad.io/posts/2013/07/setup-vs-requirement/
     install_requires=[
         "termcolor", 
-        "docopt"
+        "docopt",
+        "pillow",
+        "opencv"
     ],
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

@@ -9,6 +9,9 @@ from termcolor import colored
 
 from zombsole.core import World
 from zombsole.things import Box, Wall, Zombie, ObjectiveLocation, Player
+from zombsole.render import GameRender, TerminalRender
+
+# import tkinter as tk
 
 
 def get_creator(module_name):
@@ -161,6 +164,15 @@ class Game(object):
         # Initialize world, players, agents
         self.__initialize_world__()
 
+        # self.tkroot = tk.Tk()
+        # swidth = self.world.size[0]
+        # sheight = self.world.size[1] + len(self.players) + 1
+        # self.tkroot.geometry(f"{swidth}x{sheight}")
+        # self.text = tk.Text(self.tkroot, width=self.world.size[0], height=self.world.size[1])
+        # self.text.pack()
+        self.terminal_renderer = TerminalRender(self.use_basic_icons, debug=self.debug)
+        self.renderer = GameRender(self.map.size[0], self.map.size[1] + 2 + 1 * (len(self.players) + len(self.agents)) ) 
+
     def __initialize_world__(self):
         self.world = World(self.map.size, debug=self.debug)
 
@@ -277,7 +289,8 @@ class Game(object):
             if len(zombies) < self.minimum_zombies:
                 self.spawn_zombies(self.minimum_zombies - len(zombies))
 
-            self.draw()
+            # self.draw()
+            self.terminal_renderer.render(self.world, self.players)
 
             if self.debug:
                 if sys.version_info > (3,):
@@ -394,4 +407,8 @@ class Game(object):
                                   if t == self.world.t])
         os.system('clear')
         print(screen) # screen.encode('utf-8', errors='ignore') # TODO: cleanup
+        # self.text.insert("1.0", screen)
+
+        allplayers = sorted(self.agents, key=lambda x: x.agent_id) + sorted(self.players, key=lambda x: x.name)
+        self.renderer.render(self.world, allplayers)
 
