@@ -1,2 +1,4 @@
 termcolor
 docopt
+pillow
+opencv
