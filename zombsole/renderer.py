@@ -35,7 +35,6 @@ class TerminalRenderer(GameRenderer):
             return u' '
 
     def _draw(self, world: World, players):
-        # TODO: Call draw_world()
         """Draw the world."""
         screen = ''
 
@@ -85,7 +84,7 @@ class TerminalRenderer(GameRenderer):
     def render(self, world: World, players):
         screen = self._draw(world, players)
         os.system('clear')
-        print(screen) # screen.encode('utf-8', errors='ignore') # TODO: cleanup
+        print(screen)
     
 
 class OpencvRenderer(GameRenderer):
@@ -97,7 +96,7 @@ class OpencvRenderer(GameRenderer):
         self.imageheight = cellheight * gridheight
         self.lifebar_width = 20
 
-    def _draw_x(self, img, x, y, color, boxwidth=1, boxheight=1, width=1):
+    def _draw_x(self, img: ImageDraw, x: int, y: int, color, boxwidth: int=1, boxheight: int=1, width: int=1):
         img.line(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -115,7 +114,7 @@ class OpencvRenderer(GameRenderer):
             width=width
         )
 
-    def _render_wall(self, img, x: int, y: int):
+    def _render_wall(self, img: ImageDraw, x: int, y: int):
         img.rectangle(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -125,7 +124,7 @@ class OpencvRenderer(GameRenderer):
             outline=None,
         )
 
-    def _draw_rectangle(self, img, x: int, y: int, color):
+    def _draw_rectangle(self, img: ImageDraw, x: int, y: int, color):
         img.rectangle(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -138,7 +137,7 @@ class OpencvRenderer(GameRenderer):
 
     def _render_box(self, img, x: int, y: int, color):
         self._draw_rectangle(img, x, y, color)
-        self._draw_x(img, x, y, "grey")
+        self._draw_x(img, x, y, color)
     
     # `circle` method is introduced for ImageDraw in version 10.4.0
     # def _draw_circle(self, img, x: int, y: int, color):
@@ -158,7 +157,7 @@ class OpencvRenderer(GameRenderer):
     #         width = 1
     #     )
 
-    def _draw_ellipse(self, img, x: int, y: int, color):
+    def _draw_ellipse(self, img: ImageDraw, x: int, y: int, color):
         img.ellipse(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -169,7 +168,7 @@ class OpencvRenderer(GameRenderer):
             width = 1
         )
 
-    def _draw_solid_ellipse(self, img, x: int, y: int, color):
+    def _draw_solid_ellipse(self, img: ImageDraw, x: int, y: int, color):
         img.ellipse(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -179,19 +178,19 @@ class OpencvRenderer(GameRenderer):
             width = 1
         )
 
-    def _render_zombie(self, img, x: int, y: int):
-        self._draw_solid_ellipse(img, x, y, "red")
-
-    def _render_player(self, img, x: int, y: int, color):
+    def _render_zombie(self, img: ImageDraw, x: int, y: int, color):
         self._draw_solid_ellipse(img, x, y, color)
 
-    def _render_thing(self, img, x: int, y: int, thing: Thing):
+    def _render_player(self, img: ImageDraw, x: int, y: int, color):
+        self._draw_solid_ellipse(img, x, y, color)
+
+    def _render_thing(self, img: ImageDraw, x: int, y: int, thing: Thing):
         if isinstance(thing, (Wall,)):
             self._render_wall(img, x, y)
         elif isinstance(thing, (Box,)):
-            self._render_box(img, x, y, "grey")
+            self._render_box(img, x, y, thing.color)
         elif isinstance(thing, (Zombie,)):
-            self._render_zombie(img, x, y)
+            self._render_zombie(img, x, y, thing.color)
         elif isinstance(thing, (Player,)):
             self._render_player(img, x, y, thing.color)
         elif isinstance(thing, (ObjectiveLocation,)):
@@ -204,8 +203,6 @@ class OpencvRenderer(GameRenderer):
         life_pixels_count = int(self.lifebar_width * self.cellwidth  * player.life / player.MAX_LIFE)
         img.rectangle(
             [ 
-                # (1 * self.cellwidth, (world.size[1] + 2 + 1 * idx) * self.cellheight),
-                # ((1 + lifebar_width) * self.cellwidth, (world.size[1] + 2 + 1 * (idx + 1)) * self.cellheight)
                 (x * self.cellwidth, y * self.cellheight),
                 ((x + self.lifebar_width) * self.cellwidth, (y + 1) * self.cellheight)
             ],
@@ -214,6 +211,8 @@ class OpencvRenderer(GameRenderer):
             width=2
         )
         if life_pixels_count > 0:
+            # Here we use the custom life bar width, rather than coloring 
+            # a specified number of cells
             img.rectangle(
                 [ 
                     (x * self.cellwidth, y * self.cellheight),
@@ -224,7 +223,6 @@ class OpencvRenderer(GameRenderer):
                 width=2
             )
         else:
-            print("Dead, drawing x on lifebar")
             self._draw_x(img, x, y, "red", boxwidth=self.lifebar_width, boxheight=1, width=3)
 
     def render(self, world: World, players):
@@ -266,7 +264,6 @@ class OpencvRenderer(GameRenderer):
             img.text(((1 + self.lifebar_width + 1) * self.cellwidth, (world.size[1] + 2 + 1 * idx) * self.cellheight),  player_stats, font=None, fill=player.color, anchor="la", font_size=8)
 
         open_cv_image = np.array(image)
-        print(open_cv_image.shape)
         # Convert RGB to BGR
         open_cv_image = open_cv_image[:, :, ::-1].copy()
 
