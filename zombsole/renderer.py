@@ -194,7 +194,7 @@ class OpencvRenderer(GameRenderer):
         elif isinstance(thing, (Player,)):
             self._render_player(img, x, y, thing.color)
         elif isinstance(thing, (ObjectiveLocation,)):
-            self._draw_rectangle(img, x, y, "blue")
+            self._draw_rectangle(img, x, y, thing.color)
         elif isinstance(thing, (DeadBody,)):
             self._draw_ellipse(img, x, y, thing.color)
             self._draw_x(img, x, y, thing.color)
