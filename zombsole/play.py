@@ -4,11 +4,12 @@
 
 Usage:
     ./play.py --help
-    ./play.py RULES PLAYERS [-m MAP] [-s SIZE] [-z INITIAL_ZOMBIES] [-n MINIMUM_ZOMBIES] [-d] [-b] [-f MAX_FRAMES]
+    ./play.py RULES PLAYERS [-m MAP] [-s SIZE] [-z INITIAL_ZOMBIES] [-n MINIMUM_ZOMBIES] [-d] [-b] [-f MAX_FRAMES] [-r RENDERER]
     ./play.py list_rules
     ./play.py list_maps
 
-    GAME:     Should be the name of a type of game. Use list_rules to
+Arguments:
+    RULES:    Should be the name of a type of game. Use list_rules to
               see a complete list.
     PLAYERS:  Should be a list with the structure playerA,playerB,playerC,...
               You can also specify how much instances of each player, like
@@ -27,6 +28,8 @@ Options:
     -f MAX_FRAMES        Maximum frames per second [default: 2].
     -b                   Use basic icons if you have trouble with the
                          normal icons.
+    -r RENDERER          The renderer to use, either terminal or opencv
+                         [default: terminal]
 
 list_rules:
     Will list available game rules.
@@ -65,6 +68,7 @@ def play():
         debug = arguments['-d']
         use_basic_icons = arguments['-b']
         max_frames = int(arguments['-f'])
+        renderer_id = arguments['-r']
 
         player_names = []
         for player_part in arguments['PLAYERS'].split(','):
@@ -105,7 +109,8 @@ def play():
                  initial_zombies=initial_zombies,
                  minimum_zombies=minimum_zombies,
                  debug=debug,
-                 use_basic_icons=use_basic_icons)
+                 use_basic_icons=use_basic_icons,
+                 renderer_id=renderer_id)
         g.play(max_frames)
 
 

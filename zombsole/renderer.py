@@ -1,4 +1,5 @@
 import os
+from abc import ABC, abstractmethod
 from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
@@ -8,7 +9,12 @@ from zombsole.core import (World, Thing)
 from zombsole.things import (Wall, Box, Zombie, Player, ObjectiveLocation, DeadBody)
 
 
-class TerminalRender(object):
+class GameRenderer(ABC):
+    @abstractmethod
+    def render(self, world: World, players):
+        pass
+
+class TerminalRenderer(GameRenderer):
     def __init__(self, use_basic_icons, debug=False):
         self.use_basic_icons = use_basic_icons
         self.debug = debug
@@ -35,7 +41,7 @@ class TerminalRender(object):
 
         # print the world
         screen += '\n'.join(u''.join(self._position_draw(world, (x, y))
-                                     for x in range(world.size[0]))
+                            for x in range(world.size[0]))
                             for y in range(world.size[1]))
 
         # game stats
@@ -82,7 +88,7 @@ class TerminalRender(object):
         print(screen) # screen.encode('utf-8', errors='ignore') # TODO: cleanup
     
 
-class GameRender(object):
+class OpencvRenderer(GameRenderer):
     def __init__(self, gridwidth, gridheight, cellwidth = 10, cellheight = 10):
         self.counter = 0
         self.cellwidth = cellwidth
