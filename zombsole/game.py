@@ -168,7 +168,7 @@ class Game(object):
         elif renderer_id == "opencv":
             self.renderer = OpencvRenderer(
                 self.map.size[0], 
-                self.map.size[1] + 2 + 1 * (len(self.players) + len(self.agents))
+                self.map.size[1] + 2 + (len(self.players) + len(self.agents)) # 2 for stats line
             )
         else:
             raise ValueError(f"{renderer_id} is not a valid renderer id, must be either \"terminal\" or \"opencv\".")
