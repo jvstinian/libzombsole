@@ -40,25 +40,11 @@
           # was previously using "dependencies" but the packages 
 	  # didn't appear to propagate to the output package
           propagatedBuildInputs = with pkgs.python310.pkgs; [
-            docopt termcolor pillow opencv4
+            docopt termcolor pillow opencv4 gym
           ];
 
-          # dependencies = with pkgs.python310.pkgs; [ # TODO: Test if this is needed
-          #   docopt termcolor
-          # ];
-
-          nativeCheckInputs = with pkgs.python310.pkgs; [
-            gym # requests flask docopt termcolor
-          ];
-
+          # Not including "nativeCheckInputs" as there are no additional dependencies for testing
           doCheck = true;
-
-          # meta = { # TODO: Test if this is needed
-          #   homepage = "https://github.com/jvstinian/libzombsole";
-          #   description = "Description here.";
-          #   license = pkgs.lib.licenses.mit;
-          #   maintainers = [ "jvstinian" ];
-          # };
       };
       my-python-packages = ps: with ps; [
           docopt
