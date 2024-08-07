@@ -67,4 +67,4 @@ class Agent(Player):
             return self.action_type, target
 
 def create(agent_id, weapon, rules, objectives=None):
-    return Agent(agent_id, 'red', weapon=weapon, rules=rules, objectives=objectives)
+    return Agent(agent_id, "blue", weapon=weapon, rules=rules, objectives=objectives)

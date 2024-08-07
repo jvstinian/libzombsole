@@ -37,7 +37,10 @@ class ZombsoleGymEnv(Game):
     The methods are accessed publicly as "step", "reset", etc...
     """
     # Set this in SOME subclasses
-    metadata = {'render.modes': ['human', 'ansi']}
+    # See the supported modes in the render method
+    metadata = {
+        'render.modes': ['human']
+    }
     reward_range = (-float('inf'), float('inf'))
     # spec = None
 
@@ -220,11 +223,10 @@ class ZombsoleGymEnv(Game):
                 else:
                     super(MyEnv, self).render(mode=mode) # just raise an exception
         """
-        if mode == 'ansi':
-            return self.draw_world()
-        elif mode == 'human':
-            system('clear')
-            print(self.draw_world())
+        # if mode == 'ansi':
+        #     return self.draw_world()
+        if mode == 'human':
+            self.draw()
             return None
         else:
             raise ValueError("mode={} is not supported".format(mode))

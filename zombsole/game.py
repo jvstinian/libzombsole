@@ -9,6 +9,7 @@ from termcolor import colored
 
 from zombsole.core import World
 from zombsole.things import Box, Wall, Zombie, ObjectiveLocation, Player
+from zombsole.renderer import TerminalRenderer, OpencvRenderer
 
 
 def get_creator(module_name):
@@ -126,6 +127,7 @@ class Game(object):
     def __init__(self, rules_name, player_names, map_, initial_zombies=0,
                  minimum_zombies=0, debug=False,
                  use_basic_icons=False,
+                 renderer_id="terminal",
                  agent_ids = []):
         self.players = []
 
@@ -160,6 +162,16 @@ class Game(object):
 
         # Initialize world, players, agents
         self.__initialize_world__()
+
+        if renderer_id == "terminal":
+            self.renderer = TerminalRenderer(self.use_basic_icons, debug=self.debug)
+        elif renderer_id == "opencv":
+            self.renderer = OpencvRenderer(
+                self.map.size[0], 
+                self.map.size[1] + 2 + (len(self.players) + len(self.agents)) # 2 for stats line
+            )
+        else:
+            raise ValueError(f"{renderer_id} is not a valid renderer id, must be either \"terminal\" or \"opencv\".")
 
     def __initialize_world__(self):
         self.world = World(self.map.size, debug=self.debug)
@@ -208,21 +220,6 @@ class Game(object):
                     if isinstance(thing, Zombie)]
         if len(zombies) < self.minimum_zombies:
             self.spawn_zombies(self.minimum_zombies - len(zombies))
-
-    def position_draw(self, position):
-        """Get the string to draw for a given position of the world."""
-        # decorations first, then things over them
-        thing = (self.world.things.get(position) or
-                 self.world.decoration.get(position))
-
-        if thing is not None:
-            if self.use_basic_icons:
-                icon = thing.icon_basic
-            else:
-                icon = thing.icon
-            return colored(icon, thing.color)
-        else:
-            return u' '
 
     def encode_position_as_channels(self, position):
         """Get the character to draw for a given position of the world."""
@@ -299,99 +296,7 @@ class Game(object):
 
                 return won, description
 
-    def draw_world(self):
-        """Draw the world."""
-        screen = ''
-
-        # print the world
-        screen += '\n'.join(u''.join(self.position_draw((x, y))
-                                     for x in range(self.world.size[0]))
-                            for y in range(self.world.size[1]))
-
-        # game stats
-        screen += '\nticks: %i deaths: %i' % (self.world.t, self.world.deaths)
-
-        # print player stats
-        players = sorted(self.agents, key=lambda x: x.agent_id) + sorted(self.players, key=lambda x: x.name)
-        for player in players:
-            try:
-                weapon_name = player.weapon.name
-            except:
-                weapon_name = u'unarmed'
-
-            if player.life > 0:
-                # a small "health bar" with unicode chars, from 0 to 10 chars
-                life_chars_count = int((10.0 / player.MAX_LIFE) * player.life)
-                life_chars = life_chars_count * u'\u2588'
-                no_life_chars = (10 - life_chars_count) * u'\u2591'
-                life_bar = u'\u2665 %s%s' % (life_chars, no_life_chars)
-            else:
-                life_bar = u'\u2620 [dead]'
-
-            player_stats = u'%s %s <%i %s %s>: %s' % (life_bar,
-                                                      player.name,
-                                                      player.life,
-                                                      str(player.position),
-                                                      weapon_name,
-                                                      player.status or u'-')
-
-            screen += '\n' + colored(player_stats, player.color)
-
-        # print events (of last step) for debugging
-        if self.debug:
-            screen += u'\n'
-            screen += u'\n'.join([colored(u'%s: %s' % (thing.name, event),
-                                          thing.color)
-                                  for t, thing, event in self.world.events
-                                  if t == self.world.t])
-        return screen # screen.encode('utf-8', errors='ignore') # TODO: cleanup
-
     def draw(self):
-        # TODO: Call draw_world()
-        """Draw the world."""
-        screen = ''
-
-        # print the world
-        screen += '\n'.join(u''.join(self.position_draw((x, y))
-                                     for x in range(self.world.size[0]))
-                            for y in range(self.world.size[1]))
-
-        # game stats
-        screen += '\nticks: %i deaths: %i' % (self.world.t, self.world.deaths)
-
-        # print player stats
-        players = sorted(self.players, key=lambda x: x.name)
-        for player in players:
-            try:
-                weapon_name = player.weapon.name
-            except AttributeError:
-                weapon_name = u'unarmed'
-
-            if player.life > 0:
-                # a small "health bar" with unicode chars, from 0 to 10 chars
-                life_chars_count = int((10.0 / player.MAX_LIFE) * player.life)
-                life_chars = life_chars_count * u'\u2588'
-                no_life_chars = (10 - life_chars_count) * u'\u2591'
-                life_bar = u'\u2665 %s%s' % (life_chars, no_life_chars)
-            else:
-                life_bar = u'\u2620 [dead]'
-
-            player_stats = u'%s %s <%i %s %s>: %s' % (life_bar,
-                                                      player.name,
-                                                      player.life,
-                                                      str(player.position),
-                                                      weapon_name,
-                                                      player.status or u'-')
-
-            screen += '\n' + colored(player_stats, player.color)
-
-        # print events (of last step) for debugging
-        if self.debug:
-            screen += u'\n'
-            screen += u'\n'.join([colored(u'%s: %s' % (thing.name, event),
-                                          thing.color)
-                                  for t, thing, event in self.world.events
-                                  if t == self.world.t])
-        os.system('clear')
-        print(screen) # screen.encode('utf-8', errors='ignore') # TODO: cleanup
+        allplayers = sorted(self.agents, key=lambda x: x.agent_id) + sorted(self.players, key=lambda x: x.name)
+        self.renderer.render(self.world, allplayers)
 
