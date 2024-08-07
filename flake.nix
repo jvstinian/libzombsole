@@ -9,7 +9,7 @@
   };
   outputs = { nixpkgs, flake-utils, ... }: flake-utils.lib.eachDefaultSystem (system:
     let
-      python_opencv_overlay = final: prev: {
+      python-opencv-overlay = final: prev: {
           pythonPackagesOverlays = (prev.pythonPackagesOverlays or [ ]) ++ [
               (python-final: python-prev: {
                   opencv4 = python-prev.opencv4.override { enablePython = true; enableGtk2 = true; enableGtk3 = true; };
@@ -28,53 +28,52 @@
 
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ python_opencv_overlay ];
+        overlays = [ python-opencv-overlay ];
       };
 
       jvstinian-zombsole = pkgs.python310Packages.buildPythonPackage rec {
           name = "libzombsole";
-          version = "0.3.1";
+          version = "0.4.0";
 
           src = ./.;
 
+          # was previously using "dependencies" but the packages 
+	  # didn't appear to propagate to the output package
           propagatedBuildInputs = with pkgs.python310.pkgs; [
-            docopt termcolor pillow opencv4 # tkinter
+            docopt termcolor pillow opencv4
           ];
 
-          dependencies = with pkgs.python310.pkgs; [
-            docopt termcolor # tkinter
-          ];
+          # dependencies = with pkgs.python310.pkgs; [ # TODO: Test if this is needed
+          #   docopt termcolor
+          # ];
 
           nativeCheckInputs = with pkgs.python310.pkgs; [
-            gym # requests flask docopt termcolor # tkinter # is pip required?
+            gym # requests flask docopt termcolor
           ];
 
-          doCheck = true; # tests failing
+          doCheck = true;
 
-          meta = {
-            homepage = "https://github.com/jvstinian/libzombsole";
-            description = "Description here.";
-            license = pkgs.lib.licenses.mit;
-            maintainers = [ "jvstinian" ];
-          };
+          # meta = { # TODO: Test if this is needed
+          #   homepage = "https://github.com/jvstinian/libzombsole";
+          #   description = "Description here.";
+          #   license = pkgs.lib.licenses.mit;
+          #   maintainers = [ "jvstinian" ];
+          # };
       };
       my-python-packages = ps: with ps; [
           docopt
           termcolor
-          # numpy
+          numpy
+	  pillow
           opencv4
           gym
           jvstinian-zombsole
-          # python-lsp-server
-          # tkinter
-          pip # TODO
       ];
-      # my-python = jvstinian-zombsole.dependencies ++ (pkgs.python310.withPackages my-python-packages);
       my-python = pkgs.python310.withPackages my-python-packages;
     in rec {
       devShell = pkgs.mkShell {
         buildInputs = with pkgs; [
-          my-python # python310.pkgs.pip # python310Packages.pip
+          my-python
         ];
       };
       packages = {
