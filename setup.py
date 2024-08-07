@@ -107,6 +107,7 @@ setup(
     entry_points={  # Optional
         'console_scripts': [
             'zombsole=zombsole.play:play',
+            'zombsole-stdio=zombsole.play:play_stdio',
         ],
     },
     project_urls={

@@ -70,6 +70,10 @@
         type = "app";
         program = "${packages.zombsole}/bin/zombsole";
       };
+      apps.zombsole-stdio = {
+        type = "app";
+        program = "${packages.zombsole}/bin/zombsole-stdio";
+      };
     }
   );
 }
