@@ -1,4 +1,5 @@
 import os
+from typing import TypeAlias, Union, Tuple
 from abc import ABC, abstractmethod
 from PIL import Image, ImageDraw, ImageFont
 import cv2
@@ -8,6 +9,8 @@ from termcolor import colored
 from zombsole.core import (World, Thing)
 from zombsole.things import (Wall, Box, Zombie, Player, ObjectiveLocation, DeadBody)
 
+
+ColorType: TypeAlias = Union[str, float, Tuple[int, int, int], Tuple[int, int, int, int]]
 
 class GameRenderer(ABC):
     @abstractmethod
@@ -96,7 +99,7 @@ class OpencvRenderer(GameRenderer):
         self.imageheight = cellheight * gridheight
         self.lifebar_width = 20
 
-    def _draw_x(self, img: ImageDraw, x: int, y: int, color, boxwidth: int=1, boxheight: int=1, width: int=1):
+    def _draw_x(self, img: ImageDraw, x: int, y: int, color: ColorType, boxwidth: int=1, boxheight: int=1, width: int=1):
         img.line(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -114,7 +117,7 @@ class OpencvRenderer(GameRenderer):
             width=width
         )
 
-    def _render_wall(self, img: ImageDraw, x: int, y: int, color):
+    def _render_wall(self, img: ImageDraw, x: int, y: int, color: ColorType):
         img.rectangle(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -124,7 +127,7 @@ class OpencvRenderer(GameRenderer):
             outline=None,
         )
 
-    def _draw_rectangle(self, img: ImageDraw, x: int, y: int, color):
+    def _draw_rectangle(self, img: ImageDraw, x: int, y: int, color: ColorType):
         img.rectangle(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -135,12 +138,12 @@ class OpencvRenderer(GameRenderer):
             width=2
         )
 
-    def _render_box(self, img, x: int, y: int, color):
+    def _render_box(self, img, x: int, y: int, color: ColorType):
         self._draw_rectangle(img, x, y, color)
         self._draw_x(img, x, y, color)
     
     # `circle` method is introduced for ImageDraw in version 10.4.0
-    # def _draw_circle(self, img, x: int, y: int, color):
+    # def _draw_circle(self, img, x: int, y: int, color: ColorType):
     #     img.circle(
     #         (x * self.cellwidth + self.cellwidth / 2, y * self.cellheight + self.cellheight / 2),
     #         self.cellwidth / 2,
@@ -149,7 +152,7 @@ class OpencvRenderer(GameRenderer):
     #         width = 1
     #     )
 
-    # def _draw_solid_circle(self, img, x: int, y: int, color):
+    # def _draw_solid_circle(self, img, x: int, y: int, color: ColorType):
     #     img.circle(
     #         (x * self.cellwidth + self.cellwidth / 2, y * self.cellheight + self.cellheight / 2),
     #         self.cellwidth / 2,
@@ -157,7 +160,7 @@ class OpencvRenderer(GameRenderer):
     #         width = 1
     #     )
 
-    def _draw_ellipse(self, img: ImageDraw, x: int, y: int, color):
+    def _draw_ellipse(self, img: ImageDraw, x: int, y: int, color: ColorType):
         img.ellipse(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -168,7 +171,7 @@ class OpencvRenderer(GameRenderer):
             width = 1
         )
 
-    def _draw_solid_ellipse(self, img: ImageDraw, x: int, y: int, color):
+    def _draw_solid_ellipse(self, img: ImageDraw, x: int, y: int, color: ColorType):
         img.ellipse(
             [
                 (x * self.cellwidth, y * self.cellheight),
@@ -178,10 +181,10 @@ class OpencvRenderer(GameRenderer):
             width = 1
         )
 
-    def _render_zombie(self, img: ImageDraw, x: int, y: int, color):
+    def _render_zombie(self, img: ImageDraw, x: int, y: int, color: ColorType):
         self._draw_solid_ellipse(img, x, y, color)
 
-    def _render_player(self, img: ImageDraw, x: int, y: int, color):
+    def _render_player(self, img: ImageDraw, x: int, y: int, color: ColorType):
         self._draw_solid_ellipse(img, x, y, color)
 
     def _render_thing(self, img: ImageDraw, x: int, y: int, thing: Thing):
