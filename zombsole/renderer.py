@@ -114,13 +114,13 @@ class OpencvRenderer(GameRenderer):
             width=width
         )
 
-    def _render_wall(self, img: ImageDraw, x: int, y: int):
+    def _render_wall(self, img: ImageDraw, x: int, y: int, color):
         img.rectangle(
             [
                 (x * self.cellwidth, y * self.cellheight),
                 ((x + 1) * self.cellwidth, (y + 1) * self.cellheight),
             ],
-            fill="white",
+            fill=color,
             outline=None,
         )
 
@@ -186,7 +186,7 @@ class OpencvRenderer(GameRenderer):
 
     def _render_thing(self, img: ImageDraw, x: int, y: int, thing: Thing):
         if isinstance(thing, (Wall,)):
-            self._render_wall(img, x, y)
+            self._render_wall(img, x, y, thing.color)
         elif isinstance(thing, (Box,)):
             self._render_box(img, x, y, thing.color)
         elif isinstance(thing, (Zombie,)):
@@ -228,7 +228,6 @@ class OpencvRenderer(GameRenderer):
     def render(self, world: World, players):
         image = Image.new("RGB", (self.imagewidth, self.imageheight), "black")
         img = ImageDraw.Draw(image)
-        print(img)
 
         # print the world
         for x in range(world.size[0]):
