@@ -13,7 +13,7 @@ import numpy as np
 
 # env_closer = closer.Closer()
 
-class ZombsoleGymEnv(Game):
+class ZombsoleGymEnv(object):
     """The main OpenAI Gym class. It encapsulates an environment with
     arbitrary behind-the-scenes dynamics. An environment can be
     partially or fully observed.
@@ -71,7 +71,7 @@ class ZombsoleGymEnv(Game):
 
     # Set these in ALL subclasses
     action_space = Discrete(len(game_actions))
-    # observation_space = Box(low=0, high=8*16*16, shape=(1, self.world.size[0], self.world.size[1]), dtype=np.int32)
+    # observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[0], self.game.world.size[1]), dtype=np.int32)
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
                  minimum_zombies=0, debug=False):
@@ -79,21 +79,22 @@ class ZombsoleGymEnv(Game):
         map_file = path.join(fdir, 'maps', map_name)
         map_ = Map.from_file(map_file)
 
-        super(ZombsoleGymEnv, self).__init__(
-            rules_name, player_names, map_, initial_zombies=initial_zombies,
-            minimum_zombies=minimum_zombies, debug=debug,
+        self.game = Game(
+            rules_name, player_names, map_,
+            initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
             use_basic_icons=True,
-            agent_ids = [agent_id]
+            agent_ids = [agent_id],
+            debug=debug,
         )
         # Does this work?
-        self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.world.size[0], self.world.size[1]), dtype=np.int32)
+        self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[0], self.game.world.size[1]), dtype=np.int32)
 
     def get_observation(self):
         # TODO: make a method for retrieving state
         # observation = {
         #     'world': self.draw_world_simple(),
-        #     'ticks': self.world.t,
-        #     'deaths': self.world.deaths,
+        #     'ticks': self.game.world.t,
+        #     'deaths': self.game.world.deaths,
         #     'players': [
         #         (
         #             player.name,
@@ -105,12 +106,12 @@ class ZombsoleGymEnv(Game):
         #     ]
         # }
 
-        observation = np.array(self.encode_world_simple())
+        observation = np.array(self.game.encode_world_simple())
         return observation.reshape( (1,) + observation.shape )
     
     def get_frame_size(self):
-        return tuple(reversed(self.map.size))
-        # return self.map.size
+        return tuple(reversed(self.game.map.size))
+        # return self.game.map.size
 
     def step(self, action):
         """Run one timestep of the environment's dynamics. When end of
@@ -129,26 +130,26 @@ class ZombsoleGymEnv(Game):
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
         """
         game_action = self.game_actions[action]
-        self.agents[0].set_action(game_action)
+        self.game.agents[0].set_action(game_action)
 
         frames_per_second=None #2.0
 
-        zombie_deaths_0 = self.world.zombie_deaths 
-        # player_deaths_0 = self.world.player_deaths 
-        # agent_deaths_0 = self.world.agent_deaths
-        agents_health_0 = self.get_agents_health()
-        players_health_0 = self.get_players_health()
+        zombie_deaths_0 = self.game.world.zombie_deaths 
+        # player_deaths_0 = self.game.world.player_deaths 
+        # agent_deaths_0 = self.game.world.agent_deaths
+        agents_health_0 = self.game.get_agents_health()
+        players_health_0 = self.game.get_players_health()
 
-        self.world.step()
+        self.game.world.step()
         
-        zombie_deaths_1 = self.world.zombie_deaths 
-        # player_deaths_1 = self.world.player_deaths 
-        # agent_deaths_1 = self.world.agent_deaths
-        agents_health_1 = self.get_agents_health()
-        players_health_1 = self.get_players_health()
+        zombie_deaths_1 = self.game.world.zombie_deaths 
+        # player_deaths_1 = self.game.world.player_deaths 
+        # agent_deaths_1 = self.game.world.agent_deaths
+        agents_health_1 = self.game.get_agents_health()
+        players_health_1 = self.game.get_players_health()
 
         # maintain the flow of zombies if necessary
-        self.spawn_zombies_to_maintain_minimum()
+        self.game.spawn_zombies_to_maintain_minimum()
 
         observation = self.get_observation()
         if frames_per_second is not None:
@@ -158,8 +159,8 @@ class ZombsoleGymEnv(Game):
         #          - (agents_health_1 - agents_health_0)/100.0
 
         done = False
-        if self.rules.game_ended():
-            won, description = self.rules.game_won()
+        if self.game.rules.game_ended():
+            won, description = self.game.rules.game_won()
             done = True
         
         info = {}
@@ -183,7 +184,7 @@ class ZombsoleGymEnv(Game):
         Returns:
             observation (object): the initial observation.
         """
-        super(ZombsoleGymEnv, self).__initialize_world__()
+        self.game.__initialize_world__()
         return self.get_observation()
 
     def render(self, mode='human'):
@@ -226,7 +227,7 @@ class ZombsoleGymEnv(Game):
         # if mode == 'ansi':
         #     return self.draw_world()
         if mode == 'human':
-            self.draw()
+            self.game.draw()
             return None
         else:
             raise ValueError("mode={} is not supported".format(mode))
