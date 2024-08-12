@@ -47,7 +47,7 @@ class TerminalRenderer(GameRenderer):
                             for y in range(world.size[1]))
 
         # game stats
-        screen += '\nticks: %i deaths: %i' % (world.t, world.deaths)
+        screen += '\nticks: %i deaths: %i, zombie deaths: %i' % (world.t, world.deaths, world.zombie_deaths)
 
         # print player stats
         players = sorted(players, key=lambda x: x.name)
