@@ -70,9 +70,9 @@
         type = "app";
         program = "${packages.zombsole}/bin/zombsole";
       };
-      apps.zombsole-stdio = {
+      apps.zombsole-stdio-json = {
         type = "app";
-        program = "${packages.zombsole}/bin/zombsole-stdio";
+        program = "${packages.zombsole}/bin/zombsole-stdio-json";
       };
     }
   );
