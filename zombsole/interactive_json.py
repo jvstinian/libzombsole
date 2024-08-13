@@ -31,7 +31,6 @@ class GameStateEncoder(JSONEncoder):
         # Let the base class default method raise the TypeError
         return super().default(o)
 
-# TODO: Consider changing the following to EnvironmentStateResponse or similar
 class GameStateResponse(GameResponse):
     def __init__(self, status: str, active: bool, config_required: bool, last_observation: Union[None, Dict] = None):
         self.status = status
@@ -107,14 +106,9 @@ class GameManagementInterface(ABC):
 class GameRequest(ABC):
     @staticmethod
     def decode_hook(jsonobj):
-        # if "tag" not in jsonobj:
-        #     print("No tag: ", jsonobj)
-        #     raise ValueError("A GameRequest must have key \"tag\"")
-        # if "parameters" not in jsonobj:
-        #     raise ValueError("A GameRequest must have key \"parameters\"")
         if "tag" in jsonobj:
-            if "parameters" not in jsonobj:
-                raise ValueError("A GameRequest must have key \"parameters\"")
+            if (jsonobj["tag"] in ["GameConfigUpdate", "GameAction"]) and ("parameters" not in jsonobj):
+                raise ValueError(f"A GameRequest with tag {jsonobj['tag']} must have key \"parameters\"")
             if jsonobj["tag"] == "GameConfigUpdate":
                 return GameConfigUpdateRequest.from_dict(jsonobj["parameters"])
             elif jsonobj["tag"] == "GameStatus":
@@ -124,7 +118,7 @@ class GameRequest(ABC):
             elif jsonobj["tag"] == "StartGame":
                 return StartGameRequest()
             elif jsonobj["tag"] == "GameAction":
-                return GameActionRequest(jsonobj["parameters"])            
+                return GameActionRequest(jsonobj["parameters"])
             else:
                 raise ValueError("GameRequest \"tag\" must be \"GameConfigUpdate\", \"GameAction\", \"GameStatus\", \"StartGame\", or \"Exit\"")
         else: # Simply pass the object through (used where objects are passed as parameters)
@@ -186,7 +180,6 @@ class GymEnvManager(GameManagementInterface):
         )
         self.gym_env = None
         self.keep_going = True
-        # self.game = None
         self.last_observation = None
         self.response_encoder = GameStateEncoder(indent=None)
 
@@ -203,15 +196,12 @@ class GymEnvManager(GameManagementInterface):
             )
             self.last_observation = None
     
-    # def _game_in_progress(self):
-    #     return self.last_observation is not None
-
     def _env_status(self):
         if not self.keep_going:
             return "exiting"
         elif self.last_observation is None:
             return "wating for game"
-        else: # keep
+        else:
             "game in progress"
 
     def _get_game_state(self):
