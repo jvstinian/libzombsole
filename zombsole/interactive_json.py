@@ -1,6 +1,5 @@
-import sys
 import json
-from typing import NamedTuple, Dict, Union
+from typing import Dict, Union
 from abc import ABC, abstractmethod
 from json import JSONEncoder
 from zombsole.gym_env import ZombsoleGymEnv
@@ -72,7 +71,6 @@ class ErrorResponse(GameResponse):
         return self.message
 
 class GameConfig(object):
-    # TODO: We likely need to change the following to "agent_id"
     def __init__(self, rules_name: str, map_name: str, players, agent_ids, initial_zombies=10, minimum_zombies=10):
         self.rules_name = rules_name
         self.map_name = map_name
@@ -84,9 +82,6 @@ class GameConfig(object):
     @classmethod
     def from_dict(cls, d):
         return cls(**d)
-
-    # def update_game_manager(self):
-    #     pass
 
 class GameManagementInterface(ABC):
     @abstractmethod
@@ -294,84 +289,6 @@ def play_interactive_json():
     """Initiate a game, using the command line arguments as configuration."""
     game_manager = GymEnvManager()
     game_manager.run()
-
-    # arguments = docopt(__doc__)
-
-    # parse arguments
-    # rules_name = arguments['RULES']
-    # initial_zombies = int(arguments['-z'])
-    # minimum_zombies = int(arguments['-n'])
-    # debug = arguments['-d']
-    # use_basic_icons = arguments['-b']
-    # max_frames = int(arguments['-f'])
-    # renderer_id = arguments['-r']
-
-    # player_names = []
-    # for player_part in arguments['PLAYERS'].split(','):
-    #     if ':' in player_part:
-    #         player_name, count = player_part.split(':')
-    #         count = int(count)
-    #     else:
-    #         player_name = player_part
-    #         count = 1
-    #     player_names.extend([player_name, ] * count)
-
-    # size = arguments['-s']
-    # if size:
-    #     size = tuple(map(int, size.split('x')))
-
-    # map_name = arguments['-m']
-
-    # agent_id = "a1"
-
-    # g = ZombsoleGymEnv(
-    #     rules_name, player_names, map_name, agent_id, 
-    #     initial_zombies=initial_zombies, minimum_zombies=minimum_zombies, 
-    #     debug=debug
-    # )
-    # keep_going = True
-    # print(
-    #     json.dumps(
-    #         {
-    #             "observation": g.reset().tolist()
-    #         }
-    #     ),
-    #     file=sys.stdout
-    # )
-    # while keep_going:
-    #     # g.reset()
-    #     message = input()
-    #     record = json.loads(message)
-    #     if record == "stop":
-    #         keep_going = False
-    #         print("Received instruction to stop", file=sys.stdout)
-    #     else:
-    #         action = next((idx for idx, val in enumerate(g.game_actions) if record == val), -1)
-    #         if action >= 0:
-    #             observation, reward, done, truncated, info = g.step(action)
-    #             print(
-    #                 json.dumps(
-    #                     {
-    #                         "observation": observation.tolist(),
-    #                         "reward": reward,
-    #                         "done": done,
-    #                         "truncated": truncated,
-    #                         "info": info
-    #                     }
-    #                 ),
-    #                 file=sys.stdout
-    #             )
-    #         else:
-    #             raise ValueError(f"No action for record {message}")
-    #     # print(f"Got message: {message}")
-
-
-def print_test():
-    print(
-        GameStateEncoder(indent=None).encode(
-            GameStateResponse("waiting", False, False).to_dict()
-        )
-    )
 
 if __name__ == '__main__':
     play_interactive_json()
