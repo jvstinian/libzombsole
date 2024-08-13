@@ -1,6 +1,5 @@
-import sys
 import json
-from typing import NamedTuple, Dict, Union
+from typing import Dict, Union
 from abc import ABC, abstractmethod
 from json import JSONEncoder
 from zombsole.gym_env import ZombsoleGymEnv
@@ -32,7 +31,6 @@ class GameStateEncoder(JSONEncoder):
         # Let the base class default method raise the TypeError
         return super().default(o)
 
-# TODO: Consider changing the following to EnvironmentStateResponse or similar
 class GameStateResponse(GameResponse):
     def __init__(self, status: str, active: bool, config_required: bool, last_observation: Union[None, Dict] = None):
         self.status = status
@@ -72,7 +70,6 @@ class ErrorResponse(GameResponse):
         return self.message
 
 class GameConfig(object):
-    # TODO: We likely need to change the following to "agent_id"
     def __init__(self, rules_name: str, map_name: str, players, agent_ids, initial_zombies=10, minimum_zombies=10):
         self.rules_name = rules_name
         self.map_name = map_name
@@ -84,9 +81,6 @@ class GameConfig(object):
     @classmethod
     def from_dict(cls, d):
         return cls(**d)
-
-    # def update_game_manager(self):
-    #     pass
 
 class GameManagementInterface(ABC):
     @abstractmethod
@@ -112,14 +106,9 @@ class GameManagementInterface(ABC):
 class GameRequest(ABC):
     @staticmethod
     def decode_hook(jsonobj):
-        # if "tag" not in jsonobj:
-        #     print("No tag: ", jsonobj)
-        #     raise ValueError("A GameRequest must have key \"tag\"")
-        # if "parameters" not in jsonobj:
-        #     raise ValueError("A GameRequest must have key \"parameters\"")
         if "tag" in jsonobj:
-            if "parameters" not in jsonobj:
-                raise ValueError("A GameRequest must have key \"parameters\"")
+            if (jsonobj["tag"] in ["GameConfigUpdate", "GameAction"]) and ("parameters" not in jsonobj):
+                raise ValueError(f"A GameRequest with tag {jsonobj['tag']} must have key \"parameters\"")
             if jsonobj["tag"] == "GameConfigUpdate":
                 return GameConfigUpdateRequest.from_dict(jsonobj["parameters"])
             elif jsonobj["tag"] == "GameStatus":
@@ -129,7 +118,7 @@ class GameRequest(ABC):
             elif jsonobj["tag"] == "StartGame":
                 return StartGameRequest()
             elif jsonobj["tag"] == "GameAction":
-                return GameActionRequest(jsonobj["parameters"])            
+                return GameActionRequest(jsonobj["parameters"])
             else:
                 raise ValueError("GameRequest \"tag\" must be \"GameConfigUpdate\", \"GameAction\", \"GameStatus\", \"StartGame\", or \"Exit\"")
         else: # Simply pass the object through (used where objects are passed as parameters)
@@ -191,7 +180,6 @@ class GymEnvManager(GameManagementInterface):
         )
         self.gym_env = None
         self.keep_going = True
-        # self.game = None
         self.last_observation = None
         self.response_encoder = GameStateEncoder(indent=None)
 
@@ -208,15 +196,12 @@ class GymEnvManager(GameManagementInterface):
             )
             self.last_observation = None
     
-    # def _game_in_progress(self):
-    #     return self.last_observation is not None
-
     def _env_status(self):
         if not self.keep_going:
             return "exiting"
         elif self.last_observation is None:
             return "wating for game"
-        else: # keep
+        else:
             "game in progress"
 
     def _get_game_state(self):
@@ -294,84 +279,6 @@ def play_interactive_json():
     """Initiate a game, using the command line arguments as configuration."""
     game_manager = GymEnvManager()
     game_manager.run()
-
-    # arguments = docopt(__doc__)
-
-    # parse arguments
-    # rules_name = arguments['RULES']
-    # initial_zombies = int(arguments['-z'])
-    # minimum_zombies = int(arguments['-n'])
-    # debug = arguments['-d']
-    # use_basic_icons = arguments['-b']
-    # max_frames = int(arguments['-f'])
-    # renderer_id = arguments['-r']
-
-    # player_names = []
-    # for player_part in arguments['PLAYERS'].split(','):
-    #     if ':' in player_part:
-    #         player_name, count = player_part.split(':')
-    #         count = int(count)
-    #     else:
-    #         player_name = player_part
-    #         count = 1
-    #     player_names.extend([player_name, ] * count)
-
-    # size = arguments['-s']
-    # if size:
-    #     size = tuple(map(int, size.split('x')))
-
-    # map_name = arguments['-m']
-
-    # agent_id = "a1"
-
-    # g = ZombsoleGymEnv(
-    #     rules_name, player_names, map_name, agent_id, 
-    #     initial_zombies=initial_zombies, minimum_zombies=minimum_zombies, 
-    #     debug=debug
-    # )
-    # keep_going = True
-    # print(
-    #     json.dumps(
-    #         {
-    #             "observation": g.reset().tolist()
-    #         }
-    #     ),
-    #     file=sys.stdout
-    # )
-    # while keep_going:
-    #     # g.reset()
-    #     message = input()
-    #     record = json.loads(message)
-    #     if record == "stop":
-    #         keep_going = False
-    #         print("Received instruction to stop", file=sys.stdout)
-    #     else:
-    #         action = next((idx for idx, val in enumerate(g.game_actions) if record == val), -1)
-    #         if action >= 0:
-    #             observation, reward, done, truncated, info = g.step(action)
-    #             print(
-    #                 json.dumps(
-    #                     {
-    #                         "observation": observation.tolist(),
-    #                         "reward": reward,
-    #                         "done": done,
-    #                         "truncated": truncated,
-    #                         "info": info
-    #                     }
-    #                 ),
-    #                 file=sys.stdout
-    #             )
-    #         else:
-    #             raise ValueError(f"No action for record {message}")
-    #     # print(f"Got message: {message}")
-
-
-def print_test():
-    print(
-        GameStateEncoder(indent=None).encode(
-            GameStateResponse("waiting", False, False).to_dict()
-        )
-    )
 
 if __name__ == '__main__':
     play_interactive_json()
