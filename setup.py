@@ -107,6 +107,7 @@ setup(
     entry_points={  # Optional
         'console_scripts': [
             'zombsole=zombsole.play:play',
+            'zombsole-stdio-json=zombsole.interactive_json:play_interactive_json',
         ],
     },
     project_urls={
