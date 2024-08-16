@@ -33,7 +33,6 @@
 
       jvstinian-zombsole = pkgs.python310Packages.buildPythonPackage rec {
           name = "libzombsole";
-          version = "0.4.0";
 
           src = ./.;
 
