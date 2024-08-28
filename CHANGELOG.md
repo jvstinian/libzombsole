@@ -1,4 +1,8 @@
 
+# 0.5.1
+
+Using composition rather than inheritance for `ZombsoleGymEnv`.
+
 # 0.5.0
 
 Adding support for running the game using JSON over stdout and stdin. 
