@@ -1,4 +1,8 @@
 
+# 0.5.2
+
+Adding zombie deaths to terminal rendering.
+
 # 0.5.1
 
 Using composition rather than inheritance for `ZombsoleGymEnv`.
