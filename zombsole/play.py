@@ -44,6 +44,7 @@ from os import path, listdir
 from docopt import docopt
 
 from zombsole.game import Game, Map
+from zombsole.renderer import build_renderer
 
 
 def play():
@@ -101,6 +102,15 @@ def play():
                 size = 30, 10
 
             map_ = Map(size, [])
+        
+
+        renderer = build_renderer(
+                renderer_id,
+                use_basic_icons,
+                map_.size,
+                len(player_names),
+                debug=debug
+        )
 
         # create and start game
         g = Game(rules_name=rules_name,
@@ -110,7 +120,9 @@ def play():
                  minimum_zombies=minimum_zombies,
                  debug=debug,
                  use_basic_icons=use_basic_icons,
-                 renderer_id=renderer_id)
+                 # renderer_id=renderer_id
+                 renderer=renderer
+        )
         g.play(max_frames)
 
 

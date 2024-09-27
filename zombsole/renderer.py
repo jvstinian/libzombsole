@@ -17,6 +17,10 @@ class GameRenderer(ABC):
     def render(self, world: World, players):
         pass
 
+class NoRender(GameRenderer):
+    def render(self, world: World, players):
+        pass
+
 class TerminalRenderer(GameRenderer):
     def __init__(self, use_basic_icons, debug=False):
         self.use_basic_icons = use_basic_icons
@@ -271,4 +275,18 @@ class OpencvRenderer(GameRenderer):
 
         cv2.imshow("zombsole", open_cv_image)
         cv2.waitKey(100)
+
+
+def build_renderer(renderer_id, use_basic_icons, map_size, num_players_plus_agents, debug=False):
+    if renderer_id == "terminal":
+        return TerminalRenderer(use_basic_icons, debug=debug)
+    elif renderer_id == "opencv":
+        return OpencvRenderer(
+            map_size[0], 
+            map_size[1] + 2 + num_players_plus_agents # 2 for stats line
+        )
+    elif renderer_id == "none":
+        return NoRender()
+    else:
+        raise ValueError(f"{renderer_id} is not a valid renderer id, must be either \"terminal\", \"opencv\", or \"none\".")
 
