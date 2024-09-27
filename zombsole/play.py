@@ -120,7 +120,6 @@ def play():
                  minimum_zombies=minimum_zombies,
                  debug=debug,
                  use_basic_icons=use_basic_icons,
-                 # renderer_id=renderer_id
                  renderer=renderer
         )
         g.play(max_frames)

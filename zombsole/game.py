@@ -127,7 +127,6 @@ class Game(object):
     def __init__(self, rules_name, player_names, map_, initial_zombies=0,
                  minimum_zombies=0, debug=False,
                  use_basic_icons=False,
-                 # renderer_id="terminal",
                  renderer=TerminalRenderer(False, debug=False),
                  agent_ids = []):
         self.players = []
@@ -164,15 +163,6 @@ class Game(object):
         # Initialize world, players, agents
         self.__initialize_world__()
 
-        # if renderer_id == "terminal":
-        #     self.renderer = TerminalRenderer(self.use_basic_icons, debug=self.debug)
-        # elif renderer_id == "opencv":
-        #     self.renderer = OpencvRenderer(
-        #         self.map.size[0], 
-        #         self.map.size[1] + 2 + (len(self.players) + len(self.agents)) # 2 for stats line
-        #     )
-        # else:
-        #     raise ValueError(f"{renderer_id} is not a valid renderer id, must be either \"terminal\" or \"opencv\".")
         self.renderer = renderer
 
     def __initialize_world__(self):
