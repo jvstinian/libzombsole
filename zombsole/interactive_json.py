@@ -169,15 +169,8 @@ class GameActionRequest(object):
         game_manager.step_with_agent_action(self.action)
 
 class GymEnvManager(GameManagementInterface):
-    def __init__(self):
-        self.game_config = GameConfig(
-            "extermination",
-            "bridge",
-            [],
-            ["a1"],
-            initial_zombies=10,
-            minimum_zombies=0
-        )
+    def __init__(self, renderer: GameRenderer):
+        self.game_config = None
         self.gym_env = None
         self.keep_going = True
         self.last_observation = None
