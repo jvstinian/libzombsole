@@ -1,3 +1,6 @@
+# 0.5.3
+
+Removing initial game config from the interactive json setup. Clients will now need to specify the game configuration before starting a game.
 
 # 0.5.2
 
