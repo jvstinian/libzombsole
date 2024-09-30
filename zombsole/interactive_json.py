@@ -186,7 +186,7 @@ class GameActionRequest(object):
         game_manager.step_with_agent_action(self.action)
 
 class GymEnvManager(GameManagementInterface):
-    def __init__(self):
+    def __init__(self, renderer: GameRenderer):
         self.game_config = None
         self.gym_env = None
         self.keep_going = True
