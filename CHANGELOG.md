@@ -1,3 +1,8 @@
+# 0.5.4
+
+Building the renderer and providing to the game rather than having the game construct the renderer.
+Adding support for specifying the renderer in the interactive JSON mode.
+
 # 0.5.3
 
 Removing initial game config from the interactive json setup. Clients will now need to specify the game configuration before starting a game.

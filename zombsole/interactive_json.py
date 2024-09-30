@@ -1,8 +1,25 @@
+"""Play Zombsole interactively using JSON over stdio
+
+Usage:
+    ./zombsole-stdio-json --help
+    ./zombsole-stdio-json [-r RENDERER]
+
+Arguments:
+    RENDERER: Should be one of the following: opencv or none
+
+Options:
+    -h --help            Show this help.
+    -r RENDERER          The renderer to use, either opencv or none
+                         [default: none]
+"""
+import sys
 import json
+from json import JSONEncoder
 from typing import Dict, Union
 from abc import ABC, abstractmethod
-from json import JSONEncoder
+from docopt import docopt
 from zombsole.gym_env import ZombsoleGymEnv
+from zombsole.renderer import GameRenderer, build_renderer
 
 
 class GameResponse(ABC):
@@ -175,6 +192,7 @@ class GymEnvManager(GameManagementInterface):
         self.keep_going = True
         self.last_observation = None
         self.response_encoder = GameStateEncoder(indent=None)
+        self.renderer = renderer
 
     def _initialize_gym(self):
         if self.game_config is not None:
@@ -185,6 +203,7 @@ class GymEnvManager(GameManagementInterface):
                 self.game_config.agent_ids,
                 initial_zombies=self.game_config.initial_zombies, 
                 minimum_zombies=self.game_config.minimum_zombies, 
+                renderer=self.renderer,
                 debug=False
             )
             self.last_observation = None
@@ -270,7 +289,20 @@ class GymEnvManager(GameManagementInterface):
 
 def play_interactive_json():
     """Initiate a game, using the command line arguments as configuration."""
-    game_manager = GymEnvManager()
+    arguments = docopt(__doc__)
+    renderer_id = arguments['-r']
+    if renderer_id not in ["opencv", "none"]:
+        print("When using interactive JSON mode, renderer_id must be one of \"opencv\" or \"none\".  Exiting...", file=sys.stderr)
+        sys.exit(1)
+    renderer = build_renderer(
+            renderer_id,
+            False,
+            (120, 40),
+            1, # assume only a single agent
+            debug=False
+    )
+
+    game_manager = GymEnvManager(renderer)
     game_manager.run()
 
 if __name__ == '__main__':

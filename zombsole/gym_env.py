@@ -5,6 +5,7 @@ from gym.core import Env
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 from zombsole.game import Game, Map
+from zombsole.renderer import NoRender
 import time
 import numpy as np
 
@@ -64,7 +65,7 @@ class ZombsoleGymEnv(object):
     # setting observation_space in the constructor
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
-                 minimum_zombies=0, debug=False):
+                 minimum_zombies=0, renderer=NoRender(), debug=False):
         fdir = path.dirname(path.abspath(__file__))
         map_file = path.join(fdir, 'maps', map_name)
         map_ = Map.from_file(map_file)
@@ -73,7 +74,8 @@ class ZombsoleGymEnv(object):
             rules_name, player_names, map_,
             initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
             use_basic_icons=True,
-            agent_ids = [agent_id],
+            agent_ids=[agent_id],
+            renderer=renderer,
             debug=debug,
         )
         self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[1], self.game.world.size[0]), dtype=np.int32)
