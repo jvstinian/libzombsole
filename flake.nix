@@ -44,6 +44,15 @@
 
           # Not including "nativeCheckInputs" as there are no additional dependencies for testing
           doCheck = true;
+          nativeCheckInputs = with pkgs.python310.pkgs; [
+            pytest
+          ];
+	  checkPhase = ''
+	    runHook preCheck
+	    echo "Hello, testing"
+	    pytest -s tests/
+	    runHook postCheck
+	  '';
       };
       my-python-packages = ps: with ps; [
           docopt
