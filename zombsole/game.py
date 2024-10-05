@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 import sys
 import time
-
+from typing import Tuple
 from termcolor import colored
 
 from zombsole.core import World
@@ -117,6 +117,12 @@ class Map(object):
                    zombie_spawns,
                    objectives)
 
+    def within_bounds (self, position):
+        if (position[0] >= 0) and (position[0] < self.map[0]) and (position[1] >= 0) and (position[1] < self.map[1]):
+            return True
+        else: 
+            return False
+
 
 class Game(object):
     """An instance of game controls the flow of the game.
@@ -216,21 +222,44 @@ class Game(object):
     def encode_position_as_channels(self, position):
         """Get the character to draw for a given position of the world."""
         # decorations first, then things over them
-        thing = (self.world.things.get(position) or
-                 self.world.decoration.get(position))
+        if self.map.within_bounds(position):
+            thing = (self.world.things.get(position) or
+                     self.world.decoration.get(position))
+        else:
+            thing = Wall(position) # Note the position is out of bounds here
 
         if thing is not None:
             life = getattr(thing, 'life', 0)
             weapon = getattr(thing, 'weapon', None)
             weapon_name = weapon.name if weapon is not None else 'none'
             weapon_code = self.weapon_labels.get(weapon_name, 0)
+            thing_code = self.thing_labels.get(thing.icon_basic, 0)
+            if thing_code == 7: # agent
+                thing_code = 8 + int(thing.agent_id)
             return [
-                ord(thing.icon_basic),
+                thing_code,
                 life,
                 weapon_code
             ]
         else:
             return [0, 0, 0]
+    
+    def encode_world_with_channels(self):
+        """Render the world using channels."""
+        return [
+            [self.encode_position_as_channels((x, y)) for x in range(self.world.size[0])]
+            for y in range(self.world.size[1])
+        ]
+    
+    def encode_surroundings_with_channels(self, position: Tuple[int, int], surroundings_half_width: int):
+        """Render the surroundings using channels."""
+        xrange = range(position[0] - surroundings_half_width, position[0] + surroundings_half_width + 1)
+        yrange = range(position[1] - surroundings_half_width, position[1] + surroundings_half_width + 1)
+
+        return [
+            [self.encode_position_as_channels((x, y)) for x in xrange]
+            for y in yrange
+        ]
     
     def encode_position_simple(self, position):
         """Get the character to draw for a given position of the world."""
@@ -254,6 +283,17 @@ class Game(object):
             [self.encode_position_simple((x, y)) for x in range(self.world.size[0])]
             for y in range(self.world.size[1])
         ]
+
+    def encode_surroundings_simple(self, position: Tuple[int, int], surroundings_half_width: int):
+        """Render the surroundings using channels."""
+        xrange = range(position[0] - surroundings_half_width, position[0] + surroundings_half_width + 1)
+        yrange = range(position[1] - surroundings_half_width, position[1] + surroundings_half_width + 1)
+
+        return [
+            [self.encode_position_simple((x, y)) for x in xrange]
+            for y in yrange
+        ]
+    
 
     def play(self, frames_per_second=2.0):
         """Game main loop, ending in a game result with description."""

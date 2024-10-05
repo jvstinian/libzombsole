@@ -1,13 +1,106 @@
 #!/usr/bin/env python
 # coding: utf-8
 from os import path, system
+from abc import ABC, abstractmethod
+from typing import Tuple
 from gym.core import Env
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
+from zombsole.players.agent import Agent
 import time
 import numpy as np
+
+
+class SinglePlayerObservation(ABC):
+    @abstractmethod
+    def get_observation(self, game: Game):
+        pass
+    
+    @abstractmethod
+    def get_observation_space(self):
+        pass
+
+
+class WorldSimpleObservation(SinglePlayerObservation):
+    def __init__(self, map_size: Tuple[int, int]):
+        self.map_size = map_size
+
+    def get_observation(self, game: Game):
+        observation = np.array(game.encode_world_simple())
+        return observation.reshape( (1,) + observation.shape )
+
+    def get_observation_space(self):
+        return Box(low=0, high=8*16*16, shape=(1, self.map_size[1], self.map_size[0]), dtype=np.int32)
+
+
+class WorldChannelsObservation(SinglePlayerObservation):
+    def __init__(self, map_size: Tuple[int, int]):
+        self.map_size = map_size
+
+    def get_observation(self, game: Game):
+        return np.array(game.encode_world_with_channels())
+
+    def get_observation_space(self):
+        return Box(low=0, high=128, shape=(self.map_size[1], self.map_size[0], 3), dtype=np.int32)
+
+
+class SurroundingsSimpleObservation(SinglePlayerObservation):
+    def __init__(self, surroundings_width: int):
+        self.width = surroundings_width
+        self.half_width = surroundings_width // 2
+
+    def get_observation(self, game: Game):
+        agent = self.game.agents[0]
+        observation = np.array(game.encode_surroundings_simple(agent.position, self.half_width))
+        return observation.reshape( (1,) + observation.shape )
+
+    def get_observation_space(self):
+        return Box(low=0, high=8*16*16, shape=(1, self.width, self.width), dtype=np.int32)
+
+
+class SurroundingsChannelsObservation(SinglePlayerObservation):
+    def __init__(self, surroundings_width: int):
+        self.width = surroundings_width
+        self.half_width = surroundings_width // 2
+
+    def get_observation(self, game: Game):
+        agent = self.game.agents[0]
+        return np.array(game.encode_surroundings_with_channels(agent.position, self.half_width))
+
+    def get_observation_space(self):
+        return Box(low=0, high=128, shape=(self.width, self.width, 3), dtype=np.int32)
+
+
+def build_observation(scope: str, position_encoding_style: str, map_size: Tuple[int, int]):
+    lscope = scope.lower()
+    is_world_scope = False
+    surroundings_width = None
+    if lscope in ["world", "map"]:
+        is_world_scope = True
+    elif lscope.startswith("surroundings"):
+        is_world_scope = False
+        surroundings_width = int(lscope[len("surroundings:"):])
+        if (surroundings_width % 2 == 0) or (surroundings_width <= 1):
+            raise ValueError("surroundings width must be an odd number greater than 1")
+    else:
+        raise ValueError(f"{scope} is not a valid observation scope, must be \"world\", \"map\", or of the form \"surroundings:i\" where i is an integer")
+    
+    lpes = position_encoding_style.lower()
+    if not (lpes in ["simple", "channels"]):
+        raise ValueError(f"{lpes} must be \"simple\" or \"channels\"")
+
+    if is_world_scope:
+        if lpes == "simple":
+            return WorldSimpleObservation(map_size)
+        else:
+            return WorldChannelsObservation(map_size)
+    else:
+        if lpes == "simple":
+            return SurroundingsSimpleObservation(surroundings_width)
+        else:
+            return SurroundingsChannelsObservation(surroundings_width)
 
 
 class ZombsoleGymEnv(object):
@@ -65,7 +158,9 @@ class ZombsoleGymEnv(object):
     # setting observation_space in the constructor
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
-                 minimum_zombies=0, renderer=NoRender(), debug=False):
+                 minimum_zombies=0, renderer=NoRender(), 
+                 observation_scope="world", observation_position_encoding="simple", 
+                 debug=False):
         fdir = path.dirname(path.abspath(__file__))
         map_file = path.join(fdir, 'maps', map_name)
         map_ = Map.from_file(map_file)
@@ -78,11 +173,19 @@ class ZombsoleGymEnv(object):
             renderer=renderer,
             debug=debug,
         )
-        self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[1], self.game.world.size[0]), dtype=np.int32)
+
+        self.observation_handler = build_observation(
+                observation_scope, observation_position_encoding, map_.size
+        )
+        # self.observation_handler = WorldSimpleObservation(map_.size)
+
+        # self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[1], self.game.world.size[0]), dtype=np.int32)
+        self.observation_space = self.observation.get_observation_space()
 
     def get_observation(self):
-        observation = np.array(self.game.encode_world_simple())
-        return observation.reshape( (1,) + observation.shape )
+        return self.observation_handler.get_observation(self.game)
+        # observation = np.array(self.game.encode_world_simple())
+        # return observation.reshape( (1,) + observation.shape )
     
     def get_frame_size(self):
         return tuple(reversed(self.game.map.size))
