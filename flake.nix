@@ -42,17 +42,15 @@
             docopt termcolor pillow opencv4 gym
           ];
 
-          # Not including "nativeCheckInputs" as there are no additional dependencies for testing
           doCheck = true;
+          # Including pytestCheckHook in nativeCheckInputs to run pytest. 
+	  # If needed, arguments can be passed to pytest using pytestFlagsArray.  
+	  # Alternatively, checkPhase can be explicitly provided.
+	  # See https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/python.section.md#using-pytestcheckhook 
+	  # for more details.
           nativeCheckInputs = with pkgs.python310.pkgs; [
-            pytest
+            pytestCheckHook 
           ];
-	  checkPhase = ''
-	    runHook preCheck
-	    echo "Hello, testing"
-	    pytest -s tests/
-	    runHook postCheck
-	  '';
       };
       my-python-packages = ps: with ps; [
           docopt

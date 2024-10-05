@@ -16,3 +16,7 @@ def test_imports():
         import zombsole.gym_env
         import zombsole.game
 
+def test_fail():
+    with not_raises(ImportError):
+        import zombsole.does_not_exits
+
