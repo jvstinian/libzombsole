@@ -1,3 +1,8 @@
+# 0.6.0
+
+Adding support to the Gym environment for producing observations with world or local scope, and 
+for encoding positions with simple values or with channels.
+
 # 0.5.4
 
 Building the renderer and providing to the game rather than having the game construct the renderer.
