@@ -142,24 +142,6 @@ class Game(object):
         self.player_names = player_names
         self.agent_ids = agent_ids
         
-        self.thing_labels = {
-            '@': 1,
-            '=': 2,
-            '*': 3,
-            '#': 4,
-            'x': 5,
-            'P': 6,
-            'A': 7,
-        }
-        self.weapon_labels = {
-            'ZombieClaws': 1,
-            'Knife': 10,
-            'Axe': 11,
-            'Gun': 12,
-            'Rifle': 13,
-            'Shotgun': 14
-        }
-
         # Initialize world, players, agents
         self.__initialize_world__()
 
@@ -212,85 +194,6 @@ class Game(object):
                     if isinstance(thing, Zombie)]
         if len(zombies) < self.minimum_zombies:
             self.spawn_zombies(self.minimum_zombies - len(zombies))
-
-    # def encode_position_as_channels(self, position):
-    #     """Get the character to draw for a given position of the world."""
-    #     # decorations first, then things over them
-    #     if self.world.within_bounds(position):
-    #         thing = (self.world.things.get(position) or
-    #                  self.world.decoration.get(position))
-    #     else:
-    #         thing = Wall(position) # Note the position is out of bounds here
-    # 
-    #     if thing is not None:
-    #         life = getattr(thing, 'life', 0)
-    #         weapon = getattr(thing, 'weapon', None)
-    #         weapon_name = weapon.name if weapon is not None else 'none'
-    #         weapon_code = self.weapon_labels.get(weapon_name, 0)
-    #         thing_code = self.thing_labels.get(thing.icon_basic, 0)
-    #         if thing_code == 7: # agent
-    #             thing_code = 8 + int(thing.agent_id)
-    #         return [
-    #             thing_code,
-    #             life,
-    #             weapon_code
-    #         ]
-    #     else:
-    #         return [0, 0, 0]
-    
-    # def encode_world_with_channels(self):
-    #     """Render the world using channels."""
-    #     return [
-    #         [self.encode_position_as_channels((x, y)) for x in range(self.world.size[0])]
-    #         for y in range(self.world.size[1])
-    #     ]
-    # 
-    # def encode_surroundings_with_channels(self, position: Tuple[int, int], surroundings_half_width: int):
-    #     """Render the surroundings using channels."""
-    #     xrange = range(position[0] - surroundings_half_width, position[0] + surroundings_half_width + 1)
-    #     yrange = range(position[1] - surroundings_half_width, position[1] + surroundings_half_width + 1)
-    # 
-    #     return [
-    #         [self.encode_position_as_channels((x, y)) for x in xrange]
-    #         for y in yrange
-    #     ]
-    
-    # def encode_position_simple(self, position):
-    #     """Get the character to draw for a given position of the world."""
-    #     # decorations first, then things over them
-    #     if self.world.within_bounds(position):
-    #         thing = (self.world.things.get(position) or
-    #                  self.world.decoration.get(position))
-    #     else:
-    #         thing = Wall(position) # Note the position is out of bounds here
-
-    #     if thing is not None:
-    #         scaled_life = 16*getattr(thing, 'life', 0)//100
-    #         thing_code = self.thing_labels.get(thing.icon_basic, 0)
-    #         weapon = getattr(thing, 'weapon', None)
-    #         weapon_name = weapon.name if weapon is not None else 'none'
-    #         weapon_code = self.weapon_labels.get(weapon_name, 0)
-    #         return 16*16*thing_code + 16*weapon_code + scaled_life
-    #     else:
-    #         return 0 
-    # 
-    # def encode_world_simple(self):
-    #     """Render the world as an array of characters."""
-    #     return [
-    #         [self.encode_position_simple((x, y)) for x in range(self.world.size[0])]
-    #         for y in range(self.world.size[1])
-    #     ]
-
-    # def encode_surroundings_simple(self, position: Tuple[int, int], surroundings_half_width: int):
-    #     """Render the surroundings using channels."""
-    #     xrange = range(position[0] - surroundings_half_width, position[0] + surroundings_half_width + 1)
-    #     yrange = range(position[1] - surroundings_half_width, position[1] + surroundings_half_width + 1)
-
-    #     return [
-    #         [self.encode_position_simple((x, y)) for x in xrange]
-    #         for y in yrange
-    #     ]
-    
 
     def play(self, frames_per_second=2.0):
         """Game main loop, ending in a game result with description."""
