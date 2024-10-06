@@ -198,6 +198,12 @@ class World(object):
 
         return event
 
+    def within_bounds (self, position):
+        if (position[0] >= 0) and (position[0] < self.size[0]) and (position[1] >= 0) and (position[1] < self.size[1]):
+            return True
+        else: 
+            return False
+
 
 class Thing(object):
     """Something in the world."""
