@@ -205,7 +205,7 @@ class GymEnvManager(GameManagementInterface):
                 self.game_config.rules_name, 
                 self.game_config.players,
                 self.game_config.map_name,
-                self.game_config.agent_ids,
+                self.game_config.agent_ids[0],
                 initial_zombies=self.game_config.initial_zombies, 
                 minimum_zombies=self.game_config.minimum_zombies,
                 observation_scope=self.game_config.observation_scope,
