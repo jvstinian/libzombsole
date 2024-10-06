@@ -4,7 +4,6 @@ from __future__ import print_function
 import os
 import sys
 import time
-
 from termcolor import colored
 
 from zombsole.core import World
@@ -142,24 +141,6 @@ class Game(object):
         self.player_names = player_names
         self.agent_ids = agent_ids
         
-        self.thing_labels = {
-            '@': 1,
-            '=': 2,
-            '*': 3,
-            '#': 4,
-            'x': 5,
-            'P': 6,
-            'A': 7,
-        }
-        self.weapon_labels = {
-            'ZombieClaws': 1,
-            'Knife': 10,
-            'Axe': 11,
-            'Gun': 12,
-            'Rifle': 13,
-            'Shotgun': 14
-        }
-
         # Initialize world, players, agents
         self.__initialize_world__()
 
@@ -212,48 +193,6 @@ class Game(object):
                     if isinstance(thing, Zombie)]
         if len(zombies) < self.minimum_zombies:
             self.spawn_zombies(self.minimum_zombies - len(zombies))
-
-    def encode_position_as_channels(self, position):
-        """Get the character to draw for a given position of the world."""
-        # decorations first, then things over them
-        thing = (self.world.things.get(position) or
-                 self.world.decoration.get(position))
-
-        if thing is not None:
-            life = getattr(thing, 'life', 0)
-            weapon = getattr(thing, 'weapon', None)
-            weapon_name = weapon.name if weapon is not None else 'none'
-            weapon_code = self.weapon_labels.get(weapon_name, 0)
-            return [
-                ord(thing.icon_basic),
-                life,
-                weapon_code
-            ]
-        else:
-            return [0, 0, 0]
-    
-    def encode_position_simple(self, position):
-        """Get the character to draw for a given position of the world."""
-        # decorations first, then things over them
-        thing = (self.world.things.get(position) or
-                 self.world.decoration.get(position))
-
-        if thing is not None:
-            scaled_life = 16*getattr(thing, 'life', 0)//100
-            thing_code = self.thing_labels.get(thing.icon_basic, 0)
-            weapon = getattr(thing, 'weapon', None)
-            weapon_name = weapon.name if weapon is not None else 'none'
-            weapon_code = self.weapon_labels.get(weapon_name, 0)
-            return 16*16*thing_code + 16*weapon_code + scaled_life
-        else:
-            return 0 
-    
-    def encode_world_simple(self):
-        """Render the world as an array of characters."""
-        return [
-            [self.encode_position_simple((x, y)) for x in range(self.world.size[0])]
-            for y in range(self.world.size[1])
-        ]
 
     def play(self, frames_per_second=2.0):
         """Game main loop, ending in a game result with description."""

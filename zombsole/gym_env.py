@@ -4,6 +4,7 @@ from os import path, system
 from gym.core import Env
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
+from zombsole.gym.observation import build_observation
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
 import time
@@ -65,7 +66,9 @@ class ZombsoleGymEnv(object):
     # setting observation_space in the constructor
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
-                 minimum_zombies=0, renderer=NoRender(), debug=False):
+                 minimum_zombies=0, renderer=NoRender(), 
+                 observation_scope="world", observation_position_encoding="simple", 
+                 debug=False):
         fdir = path.dirname(path.abspath(__file__))
         map_file = path.join(fdir, 'maps', map_name)
         map_ = Map.from_file(map_file)
@@ -78,11 +81,14 @@ class ZombsoleGymEnv(object):
             renderer=renderer,
             debug=debug,
         )
-        self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[1], self.game.world.size[0]), dtype=np.int32)
+
+        self.observation_handler = build_observation(
+                observation_scope, observation_position_encoding, map_.size
+        )
+        self.observation_space = self.observation_handler.get_observation_space()
 
     def get_observation(self):
-        observation = np.array(self.game.encode_world_simple())
-        return observation.reshape( (1,) + observation.shape )
+        return self.observation_handler.get_observation(self.game)
     
     def get_frame_size(self):
         return tuple(reversed(self.game.map.size))

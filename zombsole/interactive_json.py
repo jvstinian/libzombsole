@@ -87,13 +87,18 @@ class ErrorResponse(GameResponse):
         return self.message
 
 class GameConfig(object):
-    def __init__(self, rules_name: str, map_name: str, players, agent_ids, initial_zombies=10, minimum_zombies=10):
+    def __init__(self, rules_name: str, map_name: str, players, agent_ids, 
+        initial_zombies=10, minimum_zombies=10, 
+        observation_scope="world", observation_position_encoding="simple", 
+     ):
         self.rules_name = rules_name
         self.map_name = map_name
         self.players = players
         self.agent_ids = agent_ids
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
+        self.observation_scope = observation_scope
+        self.observation_position_encoding = observation_position_encoding
 
     @classmethod
     def from_dict(cls, d):
@@ -202,7 +207,9 @@ class GymEnvManager(GameManagementInterface):
                 self.game_config.map_name,
                 self.game_config.agent_ids,
                 initial_zombies=self.game_config.initial_zombies, 
-                minimum_zombies=self.game_config.minimum_zombies, 
+                minimum_zombies=self.game_config.minimum_zombies,
+                observation_scope=self.game_config.observation_scope,
+                observation_position_encoding=self.game_config.observation_position_encoding,
                 renderer=self.renderer,
                 debug=False
             )
