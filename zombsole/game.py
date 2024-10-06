@@ -4,7 +4,6 @@ from __future__ import print_function
 import os
 import sys
 import time
-from typing import Tuple
 from termcolor import colored
 
 from zombsole.core import World
