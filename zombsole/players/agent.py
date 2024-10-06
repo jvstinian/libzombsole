@@ -7,14 +7,17 @@ from zombsole.utils import closest
 
 
 class Agent(Player):
-    def __init__(self, agent_id, color, position=None, weapon=None, rules=None,
-                 objectives=None, icon=None):
+    ICON = u'\u2A51'
+    ICON_BASIC = u'A'
+
+    def __init__(self, agent_id, color, position=None, 
+                 weapon=None, rules=None, objectives=None
+    ):
+        # We override the players icon and icon_basic fields
         super(Agent, self).__init__('agent', color, position=position, weapon=weapon, rules=rules,
-                                    objectives=objectives, icon=icon)
+                                    objectives=objectives, icon=Agent.ICON, icon_basic=Agent.ICON_BASIC)
         self.thing_type = 'agent'
         self.agent_id = agent_id
-        self.ICON = u'\u2A51'
-        self.ICON_BASIC = u'A'
 
     def set_action(self, action): 
         self.action = action
