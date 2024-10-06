@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 from os import path, system
-from abc import ABC, abstractmethod
-from typing import Tuple
 from gym.core import Env
 from gym.spaces import Box
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import build_observation
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
-from zombsole.players.agent import Agent
-from zombsole.things import Wall
 import time
 import numpy as np
 
