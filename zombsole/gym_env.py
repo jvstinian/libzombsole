@@ -89,15 +89,10 @@ class ZombsoleGymEnv(object):
         self.observation_handler = build_observation(
                 observation_scope, observation_position_encoding, map_.size
         )
-        # self.observation_handler = WorldSimpleObservation(map_.size)
-
-        # self.observation_space = Box(low=0, high=8*16*16, shape=(1, self.game.world.size[1], self.game.world.size[0]), dtype=np.int32)
         self.observation_space = self.observation_handler.get_observation_space()
 
     def get_observation(self):
         return self.observation_handler.get_observation(self.game)
-        # observation = np.array(self.game.encode_world_simple())
-        # return observation.reshape( (1,) + observation.shape )
     
     def get_frame_size(self):
         return tuple(reversed(self.game.map.size))
