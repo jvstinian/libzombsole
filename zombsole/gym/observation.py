@@ -97,7 +97,7 @@ class SinglePlayerObservation(ABC):
 
     @classmethod
     def encode_surroundings_simple(cls, world, position: Tuple[int, int], surroundings_half_width: int):
-        """Render the surroundings using channels."""
+        """Render the surroundings using characters."""
         xrange = range(position[0] - surroundings_half_width, position[0] + surroundings_half_width + 1)
         yrange = range(position[1] - surroundings_half_width, position[1] + surroundings_half_width + 1)
 
