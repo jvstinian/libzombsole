@@ -172,7 +172,7 @@ class SurroundingsChannelsObservation(SinglePlayerObservation):
         return Box(low=0, high=128, shape=(3, self.width, self.width), dtype=np.int32)
 
 
-def build_observation(scope: str, position_encoding_style: str, map_size: Tuple[int, int]):
+def build_observation(scope: str, position_encoding_style: str, map_size: Tuple[int, int]) -> SinglePlayerObservation:
     lscope = scope.lower()
     is_world_scope = False
     surroundings_width = None
@@ -200,7 +200,4 @@ def build_observation(scope: str, position_encoding_style: str, map_size: Tuple[
             return SurroundingsSimpleObservation(surroundings_width)
         else:
             return SurroundingsChannelsObservation(surroundings_width)
-
-
-class ZombsoleGymEnv(object):
 
