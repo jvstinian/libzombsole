@@ -111,13 +111,16 @@ class Player(FightingThing):
     ICON_BASIC = u'P'
 
     def __init__(self, name, color, position=None, weapon=None, rules=None,
-                 objectives=None, icon=None):
+                 objectives=None, icon=None, icon_basic=None):
         if weapon is None:
             weapon = random.choice([Gun, Shotgun, Rifle, Knife, Axe])()
 
         dead_decoration = DeadBody('dead ' + name, color, None)
 
-        super(Player, self).__init__(name, Player.ICON, Player.ICON_BASIC,
+        local_icon = icon if icon is not None else Player.ICON
+        local_icon_basic = icon_basic if icon_basic is not None else Player.ICON_BASIC
+
+        super(Player, self).__init__(name, local_icon, local_icon_basic,
                                      color, Player.MAX_LIFE, weapon, position,
                                      dead_decoration)
 
