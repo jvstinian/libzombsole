@@ -139,6 +139,7 @@ class ZombsoleGymEnv(object):
         #          - (agents_health_1 - agents_health_0)/100.0
 
         done = False
+        truncated False
         if self.game.rules.game_ended():
             won, description = self.game.rules.game_won()
             done = True
