@@ -46,6 +46,13 @@ class Rules(object):
                 return True
         return False
 
+    def agents_alive(self):
+        """Are there any agents alive?"""
+        for player in self.game.agents:
+            if player.life > 0:
+                return True
+        return False
+
     def game_ended(self):
         """Has the game ended?"""
         return not self.players_alive()
