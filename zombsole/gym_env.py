@@ -139,15 +139,16 @@ class ZombsoleGymEnv(object):
         #          - (agents_health_1 - agents_health_0)/100.0
 
         done = False
+        truncated = False
         if self.game.rules.game_ended():
             won, description = self.game.rules.game_won()
             done = True
+        elif not self.game.rules.agents_alive():
+            # Using truncated to indicate the agents are no longer alive
+            truncated = True
         
         info = {}
 
-        # A new output is needed in newer versions of gym
-        truncated = False
-            
         return observation, reward, done, truncated, info
 
 
