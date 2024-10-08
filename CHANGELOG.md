@@ -1,3 +1,7 @@
+# 0.6.1
+
+Truncate gym play when agents are no longer alive.
+
 # 0.6.0
 
 Adding support to the Gym environment for producing observations with world or local scope, and 
