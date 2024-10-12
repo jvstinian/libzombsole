@@ -5,37 +5,14 @@ from typing import Sequence
 from gym.core import Env
 from gym.spaces import Text, Box, Tuple, Dict, Sequence as GymSequence
 from gym.spaces.discrete import Discrete
-from zombsole.gym.observation import build_observation
+from zombsole.gym.observation import SurroundingsChannelsObservation
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
 import time
 import numpy as np
 
 
-class MultiagentObservation(object):
-    def __init__(self, surroundings_width: int):
-        self.width = surroundings_width
-        self.half_width = surroundings_width // 2
-        self.single_agent_observation = SurroundingsChannelsObservation(surroundings_width)
-
-    def get_observation(self, game: Game):
-        return [
-            {
-                "agent_id": agent.agent_id,
-                "observation": np.array(SinglePlayerObservation.encode_surroundings_with_channels(game.world, agent.position, self.half_width)).transpose((2, 0, 1))
-            } for agent in game.agents
-        ]
-
-    def get_observation_space(self):
-        return GymSequence(
-            Dict({
-                "agent_id": Discrete(64),
-                "observation": Box(low=0, high=128, shape=(3, self.width, self.width), dtype=np.int32)
-            })
-        )
-
-
-class MultiagentZombsoleGymEnv(object):
+class MultiagentZombsoleEnv(object):
     """The main Gym class for multiagent play.
     """
     # See the supported modes in the render method
@@ -43,48 +20,13 @@ class MultiagentZombsoleGymEnv(object):
         'render.modes': ['human']
     }
     reward_range = (-float('inf'), float('inf'))
-    game_actions = [
-        { 
-            'action_type': 'move',
-            'parameter': [0, 1]
-        },
-        { 
-            'action_type': 'move',
-            'parameter': [-1, 0]
-        },
-        { 
-            'action_type': 'move',
-            'parameter': [0, -1]
-        },
-        { 
-            'action_type': 'move',
-            'parameter': [1, 0]
-        },
-        {
-            'action_type': 'attack_closest'
-        },
-        {
-            'action_type': 'heal'
-        }
-    ]
+    
     # Set these in ALL subclasses
-    # action_space = Discrete(len(game_actions))
-    single_player_action_space = Dict(
-        { 
-            "action_type": Text(15), 
-            "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
-        }
-    )
-    # action_space = Dict(Sequence(Tuple((str, single_player_action_space))))
-    # action_space = Dict(
-    #         Sequence(
-    #             Tuple(
-    #                 (Text(3, charset="0123456789"), single_player_action_space)
-    #             )
-    #         )
-    # )
-    # action_space = Dict(
-    #         Sequence[(Text(3, charset="0123456789"), single_player_action_space)]
+    # single_player_action_space = Dict(
+    #     { 
+    #         "action_type": Text(15), 
+    #         "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
+    #     }
     # )
     # action_space = GymSequence( # This works
     #             Tuple(
@@ -106,13 +48,21 @@ class MultiagentZombsoleGymEnv(object):
     )
 
     # setting observation_space in the constructor
+    def _get_observation_space(self, half_width):
+        return GymSequence(
+            Dict({
+                "agent_id": Discrete(64),
+                "observation": Box(low=0, high=128, shape=(3, half_width, half_width), dtype=np.int32)
+            })
+        )
+
 
     def __init__(self, rules_name, player_names, map_name, agent_ids, initial_zombies=0,
                  minimum_zombies=0, renderer=NoRender(), 
-                 observation_scope_width=21, 
+                 observation_surroundings_width=21, 
                  debug=False):
         fdir = path.dirname(path.abspath(__file__))
-        map_file = path.join(fdir, 'maps', map_name)
+        map_file = path.join(fdir, '..', 'maps', map_name)
         map_ = Map.from_file(map_file)
 
         self.game = Game(
@@ -124,16 +74,27 @@ class MultiagentZombsoleGymEnv(object):
             debug=debug,
         )
 
+        self.surroundings_width = observation_surroundings_width
+        self.surroundings_half_width = observation_surroundings_width // 2
+        self.single_agent_observation = SurroundingsChannelsObservation(self.surroundings_width)
         # TODO: Call the appropriate observation handler constructor directly
-        observation_scope = f"surroundings:{observation_scope_width}"
-        observation_position_encoding="simple"
-        self.observation_handler = build_observation(
-                observation_scope, observation_position_encoding, map_.size
-        )
-        self.observation_space = self.observation_handler.get_observation_space()
+        # observation_scope = f"surroundings:{observation_scope_width}"
+        # observation_position_encoding="simple"
+        # self.observation_handler = build_observation(
+        #         observation_scope, observation_position_encoding, map_.size
+        # )
+        self.observation_space = self._get_observation_space(self.surroundings_half_width)
 
     def get_observation(self):
-        return self.observation_handler.get_observation(self.game)
+        return [
+            {
+                "agent_id": agent.agent_id,
+                "observation": self.single_agent_observation.get_observation_at_position(self.game, agent.position)
+            } for agent in self.game.agents
+        ]
+
+    # def get_observation(self):
+    #     return self.observation_handler.get_observation(self.game)
     
     # def get_frame_size(self):
     #     return tuple(reversed(self.game.map.size))
@@ -147,7 +108,7 @@ class MultiagentZombsoleGymEnv(object):
 
     def _process_action(self, action):
         return {
-            v["agent_id"]: self.process_single_agent_action(v) for v in action
+            v["agent_id"]: self._process_single_agent_action(v) for v in action
         }
 
     def step(self, action):
