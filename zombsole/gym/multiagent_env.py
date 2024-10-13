@@ -21,24 +21,6 @@ class MultiagentZombsoleEnv(object):
     }
     reward_range = (-float('inf'), float('inf'))
     
-    # Set these in ALL subclasses
-    # single_player_action_space = Dict(
-    #     { 
-    #         "action_type": Text(15), 
-    #         "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
-    #     }
-    # )
-    # action_space = GymSequence( # This works
-    #             Tuple(
-    #                 (Text(3, charset="0123456789"), single_player_action_space)
-    #             )
-    #             )
-    # action_space = Dict({ # This works
-    #     str(idx): Dict({
-    #         "action_type": Text(15), 
-    #         "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
-    #         }) for idx in range(0, 64)
-    # })
     action_space = GymSequence( # alternate approach; this might be the way to go
         Dict({
             "agent_id": Discrete(64),
@@ -47,7 +29,7 @@ class MultiagentZombsoleEnv(object):
         })
     )
 
-    # setting observation_space in the constructor
+    # setting observation_space in the constructor with the help of the following
     def _get_observation_space(self, half_width):
         return GymSequence(
             Dict({
@@ -77,12 +59,6 @@ class MultiagentZombsoleEnv(object):
         self.surroundings_width = observation_surroundings_width
         self.surroundings_half_width = observation_surroundings_width // 2
         self.single_agent_observation = SurroundingsChannelsObservation(self.surroundings_width)
-        # TODO: Call the appropriate observation handler constructor directly
-        # observation_scope = f"surroundings:{observation_scope_width}"
-        # observation_position_encoding="simple"
-        # self.observation_handler = build_observation(
-        #         observation_scope, observation_position_encoding, map_.size
-        # )
         self.observation_space = self._get_observation_space(self.surroundings_half_width)
 
     def get_observation(self):
@@ -93,9 +69,6 @@ class MultiagentZombsoleEnv(object):
             } for agent in self.game.agents
         ]
 
-    # def get_observation(self):
-    #     return self.observation_handler.get_observation(self.game)
-    
     # def get_frame_size(self):
     #     return tuple(reversed(self.game.map.size))
 
