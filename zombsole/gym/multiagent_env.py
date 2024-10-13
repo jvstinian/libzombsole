@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
-from os import path, system
-from typing import Sequence
+from os import path
 from gym.core import Env
-from gym.spaces import Text, Box, Tuple, Dict, Sequence as GymSequence
+from gym.spaces import Text, Box, Dict, Sequence
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import SurroundingsChannelsObservation
 from zombsole.game import Game, Map
@@ -21,7 +20,7 @@ class MultiagentZombsoleEnv(object):
     }
     reward_range = (-float('inf'), float('inf'))
     
-    action_space = GymSequence( # alternate approach; this might be the way to go
+    action_space = Sequence( # alternate approach; this might be the way to go
         Dict({
             "agent_id": Discrete(64),
             "action_type": Text(15), 
@@ -31,7 +30,7 @@ class MultiagentZombsoleEnv(object):
 
     # setting observation_space in the constructor with the help of the following
     def _get_observation_space(self, half_width):
-        return GymSequence(
+        return Sequence(
             Dict({
                 "agent_id": Discrete(64),
                 "observation": Box(low=0, high=128, shape=(3, half_width, half_width), dtype=np.int32)
