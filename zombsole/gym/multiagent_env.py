@@ -68,9 +68,6 @@ class MultiagentZombsoleEnv(object):
             } for agent in self.game.agents
         ]
 
-    # def get_frame_size(self):
-    #     return tuple(reversed(self.game.map.size))
-
     def _process_single_agent_action(self, sp_action):
         coords = sp_action.get("parameter", [0, 0])
         return { 
