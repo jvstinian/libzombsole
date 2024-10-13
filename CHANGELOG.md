@@ -1,3 +1,7 @@
+# 0.8.0
+
+Adding a Multi-Agent environment.
+
 # 0.7.0
 
 Fixing and updating actions for agents. The targeted attack has been fixed, the "heal" action now uses the relative coordinates to target the healing, and a "heal_closest" action has been added to heal the closest player.
