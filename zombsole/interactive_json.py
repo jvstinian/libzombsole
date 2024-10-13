@@ -273,9 +273,6 @@ class GymEnvManager(GameManagementInterface):
         )
     
     def step_with_agent_action(self, action: Dict):
-        # TODO: We should be able to pass the action directly now
-        # action_id = ZombsoleGymEnv.game_actions.index(action)
-        # observation, reward, done, truncated, info = self.gym_env.step(action_id)
         observation, reward, done, truncated, info = self.gym_env.step(action)
         self.last_observation = {
             "observation": observation.tolist(),

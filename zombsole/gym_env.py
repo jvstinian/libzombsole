@@ -36,33 +36,8 @@ class ZombsoleGymEnv(object):
     metadata = {
         'render.modes': ['human']
     }
-    reward_range = (-float('inf'), float('inf'))
-    # game_actions = [
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [0, 1]
-    #     },
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [-1, 0]
-    #     },
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [0, -1]
-    #     },
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [1, 0]
-    #     },
-    #     {
-    #         'action_type': 'attack_closest'
-    #     },
-    #     {
-    #         'action_type': 'heal'
-    #     }
-    # ]
     # Set these in ALL subclasses
-    # action_space = Discrete(len(game_actions))
+    reward_range = (-float('inf'), float('inf'))
     action_space = Dict({
         "action_type": Text(15), 
         "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
@@ -113,8 +88,6 @@ class ZombsoleGymEnv(object):
             done (bool): whether the episode has ended, in which case further step() calls will return undefined results
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
         """
-        # game_action = self.game_actions[action]
-        # self.game.agents[0].set_action(game_action)
         self.game.agents[0].set_action(action)
 
         frames_per_second=None
