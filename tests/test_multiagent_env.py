@@ -14,7 +14,7 @@ def env1p_fixture():
         initial_zombies=1,
         minimum_zombies=0, 
         renderer=NoRender(), 
-         observation_surroundings_width=21, 
+        observation_surroundings_width=21, 
         debug=True
     )
     return env
@@ -30,7 +30,7 @@ def env2p_fixture():
         initial_zombies=1,
         minimum_zombies=0, 
         renderer=NoRender(), 
-         observation_surroundings_width=21, 
+        observation_surroundings_width=21, 
         debug=True
     )
     return env
@@ -46,7 +46,7 @@ def env32p_fixture():
         initial_zombies=100,
         minimum_zombies=0, 
         renderer=NoRender(), 
-         observation_surroundings_width=21, 
+        observation_surroundings_width=21, 
         debug=True
     )
     return env
@@ -75,7 +75,7 @@ def test_multiagent_env_shape():
 def test_multiagent_1pgame(env1p):
     stepcount = 0
     while True:
-        observation, reward, done, truncated, _ = env1p.step([
+        _, _, done, truncated, _ = env1p.step([
             {
                 "agent_id": 0,
                 "action_type": "attack_closest",
