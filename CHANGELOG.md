@@ -14,6 +14,10 @@ Adding a Multi-Agent environment.
 
 Fixing and updating actions for agents. The targeted attack has been fixed, the "heal" action now uses the relative coordinates to target the healing, and a "heal_closest" action has been added to heal the closest player.
 
+# 0.6.2
+
+Fixing the encoding of life when using simple encoding.
+
 # 0.6.1
 
 Truncate gym play when agents are no longer alive.

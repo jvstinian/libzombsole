@@ -44,7 +44,8 @@ class SinglePlayerObservation(ABC):
             thing = Wall(position) # Note the position is out of bounds here
 
         if thing is not None:
-            scaled_life = 16*getattr(thing, 'life', 0)//100
+            adj_life = min(getattr(thing, 'life', 0), 100)
+            scaled_life = 15*adj_life//100
             thing_code = SinglePlayerObservation.thing_labels.get(thing.icon_basic, 0)
             weapon = getattr(thing, 'weapon', None)
             weapon_name = weapon.name if weapon is not None else 'none'
