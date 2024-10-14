@@ -1,3 +1,7 @@
+# 0.6.2
+
+Fixing the encoding of life when using simple encoding.
+
 # 0.6.1
 
 Truncate gym play when agents are no longer alive.
