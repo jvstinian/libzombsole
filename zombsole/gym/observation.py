@@ -168,6 +168,10 @@ class SurroundingsChannelsObservation(SinglePlayerObservation):
     def get_observation_space(self):
         return Box(low=0, high=128, shape=(3, self.width, self.width), dtype=np.int32)
 
+    # This additional method is used for MultiAgent observations
+    def get_observation_at_position(self, game: Game, position: Tuple[int, int]):
+        return np.array(SinglePlayerObservation.encode_surroundings_with_channels(game.world, position, self.half_width)).transpose((2, 0, 1))
+
 
 def build_observation(scope: str, position_encoding_style: str, map_size: Tuple[int, int]) -> SinglePlayerObservation:
     lscope = scope.lower()
