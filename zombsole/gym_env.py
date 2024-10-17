@@ -2,7 +2,7 @@
 # coding: utf-8
 from os import path, system
 from gym.core import Env
-from gym.spaces import Box
+from gym.spaces import Text, Box, Dict
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import build_observation
 from zombsole.game import Game, Map
@@ -36,33 +36,12 @@ class ZombsoleGymEnv(object):
     metadata = {
         'render.modes': ['human']
     }
-    reward_range = (-float('inf'), float('inf'))
-    game_actions = [
-        { 
-            'action_type': 'move',
-            'parameter': [0, 1]
-        },
-        { 
-            'action_type': 'move',
-            'parameter': [-1, 0]
-        },
-        { 
-            'action_type': 'move',
-            'parameter': [0, -1]
-        },
-        { 
-            'action_type': 'move',
-            'parameter': [1, 0]
-        },
-        {
-            'action_type': 'attack_closest'
-        },
-        {
-            'action_type': 'heal'
-        }
-    ]
     # Set these in ALL subclasses
-    action_space = Discrete(len(game_actions))
+    reward_range = (-float('inf'), float('inf'))
+    action_space = Dict({
+        "action_type": Text(15), 
+        "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
+    })
     # setting observation_space in the constructor
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
@@ -109,8 +88,7 @@ class ZombsoleGymEnv(object):
             done (bool): whether the episode has ended, in which case further step() calls will return undefined results
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
         """
-        game_action = self.game_actions[action]
-        self.game.agents[0].set_action(game_action)
+        self.game.agents[0].set_action(action)
 
         frames_per_second=None
 
@@ -264,65 +242,66 @@ class ZombsoleGymEnv(object):
         # propagate exception
         return False
 
-# class Wrapper(Env):
-#     """Wraps the environment to allow a modular transformation.
 
-#     This class is the base class for all wrappers. The subclass could override
-#     some methods to change the behavior of the original environment without touching the
-#     original code.
+class Wrapper(Env):
+    """Wraps the environment to allow a modular transformation.
 
-#     .. note::
+    This class is the base class for all wrappers. The subclass could override
+    some methods to change the behavior of the original environment without touching the
+    original code.
 
-#         Don't forget to call ``super().__init__(env)`` if the subclass overrides :meth:`__init__`.
+    .. note::
 
-#     """
-#     def __init__(self, env):
-#         self.env = env
-#         self.action_space = self.env.action_space
-#         self.observation_space = self.env.observation_space
-#         self.reward_range = self.env.reward_range
-#         self.metadata = self.env.metadata
+        Don't forget to call ``super().__init__(env)`` if the subclass overrides :meth:`__init__`.
 
-#     def __getattr__(self, name):
-#         if name.startswith('_'):
-#             raise AttributeError("attempted to get missing private attribute '{}'".format(name))
-#         return getattr(self.env, name)
+    """
+    def __init__(self, env):
+        self.env = env
+        self.action_space = self.env.action_space
+        self.observation_space = self.env.observation_space
+        self.reward_range = self.env.reward_range
+        self.metadata = self.env.metadata
 
-#     @property
-#     def spec(self):
-#         return self.env.spec
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError("attempted to get missing private attribute '{}'".format(name))
+        return getattr(self.env, name)
 
-#     @classmethod
-#     def class_name(cls):
-#         return cls.__name__
+    @property
+    def spec(self):
+        return self.env.spec
 
-#     def step(self, action):
-#         return self.env.step(action)
+    @classmethod
+    def class_name(cls):
+        return cls.__name__
 
-#     def reset(self, **kwargs):
-#         return self.env.reset(**kwargs)
+    def step(self, action):
+        return self.env.step(action)
 
-#     def render(self, mode='human', **kwargs):
-#         return self.env.render(mode, **kwargs)
+    def reset(self, **kwargs):
+        return self.env.reset(**kwargs)
 
-#     def close(self):
-#         return self.env.close()
+    def render(self, mode='human', **kwargs):
+        return self.env.render(mode, **kwargs)
 
-#     def seed(self, seed=None):
-#         return self.env.seed(seed)
+    def close(self):
+        return self.env.close()
 
-#     def compute_reward(self, achieved_goal, desired_goal, info):
-#         return self.env.compute_reward(achieved_goal, desired_goal, info)
+    def seed(self, seed=None):
+        return self.env.seed(seed)
 
-#     def __str__(self):
-#         return '<{}{}>'.format(type(self).__name__, self.env)
+    def compute_reward(self, achieved_goal, desired_goal, info):
+        return self.env.compute_reward(achieved_goal, desired_goal, info)
 
-#     def __repr__(self):
-#         return str(self)
+    def __str__(self):
+        return '<{}{}>'.format(type(self).__name__, self.env)
 
-#     @property
-#     def unwrapped(self):
-#         return self.env.unwrapped
+    def __repr__(self):
+        return str(self)
+
+    @property
+    def unwrapped(self):
+        return self.env.unwrapped
 
 
 # class ObservationWrapper(Wrapper):
@@ -350,15 +329,56 @@ class ZombsoleGymEnv(object):
 #         raise NotImplementedError
 
 
-# class ActionWrapper(Wrapper):
-#     def reset(self, **kwargs):
-#         return self.env.reset(**kwargs)
+class ZombsoleGymEnvDiscreteAction(Wrapper):
+    game_actions = [
+        { 
+            'action_type': 'move',
+            'parameter': [0, 1]
+        },
+        { 
+            'action_type': 'move',
+            'parameter': [-1, 0]
+        },
+        { 
+            'action_type': 'move',
+            'parameter': [0, -1]
+        },
+        { 
+            'action_type': 'move',
+            'parameter': [1, 0]
+        },
+        {
+            'action_type': 'attack_closest'
+        },
+        {
+            'action_type': 'heal'
+        }
+    ]
+    action_space = Discrete(len(game_actions))
+    
+    def __init__(self, rules_name, player_names, map_name, agent_id, 
+                 initial_zombies=0, minimum_zombies=0, 
+                 renderer=NoRender(), 
+                 observation_scope="world", observation_position_encoding="simple", 
+                 debug=False):
+        env = ZombsoleGymEnv(
+            rules_name, player_names, map_name, agent_id, 
+            initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
+            renderer=renderer,
+            observation_scope=observation_scope, observation_position_encoding=observation_position_encoding,
+            debug=debug
+        )
+        super().__init__(env)
 
-#     def step(self, action):
-#         return self.env.step(self.action(action))
+    def reset(self, **kwargs):
+        return super().reset(**kwargs)
 
-#     def action(self, action):
-#         raise NotImplementedError
+    def step(self, action):
+        return super().step(self.action(action))
 
-#     def reverse_action(self, action):
-#         raise NotImplementedError
+    def action(self, action):
+        return self.game_actions[action]
+
+    def reverse_action(self, action):
+        return self.game_actions.index(action)
+
