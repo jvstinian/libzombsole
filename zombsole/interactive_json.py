@@ -2,7 +2,7 @@
 
 Usage:
     ./zombsole-stdio-json --help
-    ./zombsole-stdio-json [-r RENDERER]
+    ./zombsole-stdio-json [-r RENDERER] [--multi-agent]
 
 Arguments:
     RENDERER: Should be one of the following: opencv or none
@@ -11,6 +11,7 @@ Options:
     -h --help            Show this help.
     -r RENDERER          The renderer to use, either opencv or none
                          [default: none]
+    -m, --multi-agent    Play Multi-Agent Zombsole
 """
 import sys
 import json
@@ -19,6 +20,7 @@ from typing import Dict, Union
 from abc import ABC, abstractmethod
 from docopt import docopt
 from zombsole.gym_env import ZombsoleGymEnv
+from zombsole.gym.multiagent_env import MultiagentZombsoleEnv
 from zombsole.renderer import GameRenderer, build_renderer
 
 
@@ -191,28 +193,45 @@ class GameActionRequest(object):
         game_manager.step_with_agent_action(self.action)
 
 class GymEnvManager(GameManagementInterface):
-    def __init__(self, renderer: GameRenderer):
+    def __init__(self, renderer: GameRenderer, use_multiagent_env: bool):
         self.game_config = None
         self.gym_env = None
         self.keep_going = True
         self.last_observation = None
         self.response_encoder = GameStateEncoder(indent=None)
         self.renderer = renderer
+        self.use_multiagent_env = use_multiagent_env
 
     def _initialize_gym(self):
         if self.game_config is not None:
-            self.gym_env = ZombsoleGymEnv(
-                self.game_config.rules_name, 
-                self.game_config.players,
-                self.game_config.map_name,
-                self.game_config.agent_ids[0],
-                initial_zombies=self.game_config.initial_zombies, 
-                minimum_zombies=self.game_config.minimum_zombies,
-                observation_scope=self.game_config.observation_scope,
-                observation_position_encoding=self.game_config.observation_position_encoding,
-                renderer=self.renderer,
-                debug=False
-            )
+            if self.use_multiagent_env:
+                scope = self.game_config.observation_scope
+                swidth = int(scope[len("surroundings:"):]) if scope.startswith("surroundings:") else 21
+
+                self.gym_env = MultiagentZombsoleEnv(
+                    self.game_config.rules_name,
+                    self.game_config.players,
+                    self.game_config.map_name,
+                    self.game_config.agent_ids,
+                    initial_zombies=self.game_config.initial_zombies, 
+                    minimum_zombies=self.game_config.minimum_zombies,
+                    observation_surroundings_width=swidth,
+                    renderer=self.renderer,
+                    debug=False
+                )
+            else: # single agent
+                self.gym_env = ZombsoleGymEnv(
+                    self.game_config.rules_name, 
+                    self.game_config.players,
+                    self.game_config.map_name,
+                    self.game_config.agent_ids[0],
+                    initial_zombies=self.game_config.initial_zombies, 
+                    minimum_zombies=self.game_config.minimum_zombies,
+                    observation_scope=self.game_config.observation_scope,
+                    observation_position_encoding=self.game_config.observation_position_encoding,
+                    renderer=self.renderer,
+                    debug=False
+                )
             self.last_observation = None
     
     def _env_status(self):
@@ -257,8 +276,21 @@ class GymEnvManager(GameManagementInterface):
             self._get_game_state()
         )
     
+    def _observation_json_ready(self, observation):
+        # Convert numpy arrays to python lists for JSON serialization
+        if self.use_multiagent_env:
+            # Go through the observation records, and convert numpy arrays to python lists
+            for agentobs in observation:
+                if "observation" in agentobs: # this should always be the case
+                    agentobs.update(
+                        {"observation": agentobs.get("observation").tolist()}
+                    )
+            return observation
+        else: # single-agent
+            return observation.tolist()
+
     def start_game(self):
-        observation = self.gym_env.reset().tolist()
+        observation = self._observation_json_ready(self.gym_env.reset())
         self.last_observation = {
             "observation": observation,
             "reward": 0,
@@ -275,7 +307,7 @@ class GymEnvManager(GameManagementInterface):
     def step_with_agent_action(self, action: Dict):
         observation, reward, done, truncated, info = self.gym_env.step(action)
         self.last_observation = {
-            "observation": observation.tolist(),
+            "observation": self._observation_json_ready(observation),
             "reward": reward,
             "done": done,
             "truncated": truncated,
@@ -307,8 +339,9 @@ def play_interactive_json():
             1, # assume only a single agent
             debug=False
     )
+    multiagent_flag = arguments["--multi-agent"]
 
-    game_manager = GymEnvManager(renderer)
+    game_manager = GymEnvManager(renderer, multiagent_flag)
     game_manager.run()
 
 if __name__ == '__main__':

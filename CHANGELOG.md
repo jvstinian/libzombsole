@@ -1,3 +1,7 @@
+# 0.8.2
+
+Adding multi-agent support to interactive zombsole.
+
 # 0.8.1
 
 The single-agent environment `ZombsoleGymEnv` now accepts the actions as dict types directly.  An additional environment `ZombsoleGymEnvDiscreteAction` which accepts the discrete actions has been set up as a wrapper class.
