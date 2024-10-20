@@ -13,9 +13,9 @@
           pythonPackagesOverlays = (prev.pythonPackagesOverlays or [ ]) ++ [
               (python-final: python-prev: {
                   opencv4 = python-prev.opencv4.override { enablePython = true; enableGtk2 = true; enableGtk3 = true; };
-              })
-	      ] ++ [
-              (python-final: python-prev: {
+              # })
+	      # ] ++ [
+              # (python-final: python-prev: {
                   # jvstinian-zombsole = final.python310Packages.buildPythonPackage rec {
                   jvstinian-zombsole = python-final.buildPythonPackage rec {
                       name = "libzombsole";
