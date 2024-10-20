@@ -1,3 +1,7 @@
+# 0.8.2
+
+Adding static method to the Map class to allow a user of the package to load a Map using the map name.  To support loading a map outside of python, a method has been added that returns the path to the map file for a given map name.
+
 # 0.8.1
 
 The single-agent environment `ZombsoleGymEnv` now accepts the actions as dict types directly.  An additional environment `ZombsoleGymEnvDiscreteAction` which accepts the discrete actions has been set up as a wrapper class.
