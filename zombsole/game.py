@@ -128,6 +128,10 @@ class Map(object):
     def from_map_name(cls, map_name):
         map_file = path.join(path.dirname(__file__), 'maps', map_name)
         return cls.from_file(map_file)
+    
+    @classmethod
+    def get_map_file_location(cls, map_name):
+        return path.join(path.dirname(__file__), 'maps', map_name)
 
 
 class Game(object):
