@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+from os import path
 import sys
 import time
 from termcolor import colored
@@ -122,6 +123,11 @@ class Map(object):
                    player_spawns,
                    zombie_spawns,
                    objectives)
+
+    @classmethod
+    def from_map_name(cls, map_name):
+        map_file = path.join(path.dirname(__file__), 'maps', map_name)
+        return cls.from_file(map_file)
 
 
 class Game(object):
