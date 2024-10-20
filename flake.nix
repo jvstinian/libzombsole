@@ -16,13 +16,15 @@
               })
 	      ] ++ [
               (python-final: python-prev: {
-                  jvstinian-zombsole = final.python310Packages.buildPythonPackage rec {
+                  # jvstinian-zombsole = final.python310Packages.buildPythonPackage rec {
+                  jvstinian-zombsole = python-final.buildPythonPackage rec {
                       name = "libzombsole";
                       src = ./.;
     
                       # was previously using "dependencies" but the packages 
                       # didn't appear to propagate to the output package
-                      propagatedBuildInputs = with final.python310.pkgs; [
+                      # propagatedBuildInputs = with final.python310.pkgs; [
+                      propagatedBuildInputs = with python-final; [
                         docopt termcolor pillow opencv4 gym
                       ];
     
@@ -32,7 +34,8 @@
                       # Alternatively, checkPhase can be explicitly provided.
                       # See https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/python.section.md#using-pytestcheckhook 
                       # for more details.
-                      nativeCheckInputs = with final.python310.pkgs; [
+                      # nativeCheckInputs = with final.python310.pkgs; [
+                      nativeCheckInputs = with python-final; [
                         pytestCheckHook 
                       ];
                   };
