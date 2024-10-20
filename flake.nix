@@ -9,7 +9,7 @@
   };
   outputs = { nixpkgs, flake-utils, ... }: 
     let
-      python-opencv-overlay = final: prev: {
+      python-opencv-zombsole-overlay = final: prev: {
           pythonPackagesOverlays = (prev.pythonPackagesOverlays or [ ]) ++ [
               (python-final: python-prev: {
                   opencv4 = python-prev.opencv4.override { enablePython = true; enableGtk2 = true; enableGtk3 = true; };
@@ -53,7 +53,7 @@
         let 
           pkgs = import nixpkgs {
             inherit system;
-            overlays = [ python-opencv-overlay ];
+            overlays = [ python-opencv-zombsole-overlay ];
           };
     
           dev-python-packages = ps: with ps; [
@@ -86,6 +86,6 @@
         };
       }
     ) // {
-      overlays.default = python-opencv-overlay;
+      overlays.default = python-opencv-zombsole-overlay;
     };
 }
