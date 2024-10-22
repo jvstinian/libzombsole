@@ -36,14 +36,14 @@
               })
           ];
 
-          python310 = let
-                  self = prev.python310.override {
+          python3 = let
+                  self = prev.python3.override {
                       inherit self;
                       packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
                   }; 
               in self;
 
-          python310Packages = final.python310.pkgs;
+          python3Packages = final.python3.pkgs;
       };
     in 
       flake-utils.lib.eachDefaultSystem (system:
@@ -62,7 +62,7 @@
               gym
               jvstinian-zombsole
           ];
-          dev-python = pkgs.python310.withPackages dev-python-packages;
+          dev-python = pkgs.python3.withPackages dev-python-packages;
       in rec {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
@@ -70,8 +70,8 @@
           ];
         };
         packages = {
-          zombsole = pkgs.python310Packages.jvstinian-zombsole;
-          default = pkgs.python310Packages.jvstinian-zombsole;
+          zombsole = pkgs.python3Packages.jvstinian-zombsole;
+          default = pkgs.python3Packages.jvstinian-zombsole;
         };
         apps.default = {
           type = "app";
