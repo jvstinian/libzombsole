@@ -99,24 +99,34 @@ class Map(object):
 
         # for each char, create the corresponding object
         for row_index, line in enumerate(lines):
-            max_row = row_index
+            # There might be a trailing newline and so the last "line" might be length 0.
+            # We only process the line if it has positive length
+            if line:
+                max_row = row_index
+                print(f"row_index: {row_index}, line length: {len(line)}")
 
-            for col_index, char in enumerate(line):
-                if char:
-                    max_col = max(col_index, max_col)
+                for col_index, char in enumerate(line):
+                    if char:
+                        max_col = max(col_index, max_col)
 
-                position = (col_index, row_index)
-                if char in (Box.ICON, 'b', 'B'):
-                    things.append(Box(position))
-                elif char in (Wall.ICON, 'w', 'W'):
-                    things.append(Wall(position))
-                elif char.lower() == 'p':
-                    player_spawns.append(position)
-                elif char.lower() == 'z':
-                    zombie_spawns.append(position)
-                elif char.lower() == 'o':
-                    objectives.append(position)
-                    things.append(ObjectiveLocation(position))
+                        position = (col_index, row_index)
+                        if char in (Box.ICON, 'b', 'B'):
+                            things.append(Box(position))
+                        elif char in (Wall.ICON, 'w', 'W'):
+                            things.append(Wall(position))
+                        elif char.lower() == 'p':
+                            player_spawns.append(position)
+                        elif char.lower() == 'z':
+                            zombie_spawns.append(position)
+                        elif char.lower() == 'o':
+                            objectives.append(position)
+                            things.append(ObjectiveLocation(position))
+
+        # At this point max_row and max_col indicate the maximum index value, so we add 1 
+        # to indicate the total number of rows and columns.
+        print(f"max_row: {max_row}, max_col: {max_col}")
+        max_row += 1
+        max_col += 1
 
         return Map((max_col, max_row),
                    things,
