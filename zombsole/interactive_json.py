@@ -313,6 +313,9 @@ class GymEnvManager(GameManagementInterface):
             "truncated": truncated,
             "info": info
         }
+
+        self.gym_env.render(mode='human')
+
         self._resposne_to_stdout(
             GameObservationResponse(
                 self.last_observation
