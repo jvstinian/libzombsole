@@ -1,3 +1,7 @@
+# 0.8.6
+
+Fixing action space on discrete action wrapper of gymnasium environment.
+
 # 0.8.5
 
 Fixing the map size determined on map file read.
