@@ -1,3 +1,7 @@
+# 0.8.4
+
+Fixing the map size determined on map file read.
+
 # 0.8.3
 
 Adding multi-agent support to interactive zombsole.
