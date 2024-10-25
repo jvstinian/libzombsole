@@ -354,7 +354,6 @@ class ZombsoleGymEnvDiscreteAction(Wrapper):
             'action_type': 'heal'
         }
     ]
-    action_space = Discrete(len(game_actions))
     
     def __init__(self, rules_name, player_names, map_name, agent_id, 
                  initial_zombies=0, minimum_zombies=0, 
@@ -369,6 +368,8 @@ class ZombsoleGymEnvDiscreteAction(Wrapper):
             debug=debug
         )
         super().__init__(env)
+        # We override the action_space here
+        self.action_space = Discrete(len(ZombsoleGymEnvDiscreteAction.game_actions))
 
     def reset(self, **kwargs):
         return super().reset(**kwargs)

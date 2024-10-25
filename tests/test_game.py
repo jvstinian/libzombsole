@@ -1,5 +1,6 @@
 # tests/test_game.py
 import pytest
+from gym.spaces.discrete import Discrete
 from zombsole.gym_env import ZombsoleGymEnv, ZombsoleGymEnvDiscreteAction
 from zombsole.renderer import NoRender
 from zombsole.things import Zombie
@@ -124,6 +125,9 @@ def test_discrete_game_closest_attack():
         observation_position_encoding="simple",
         debug=True
     )
+
+    # We first make sure the action_space has the desired type
+    assert isinstance(gym_env.action_space, (Discrete,))
 
     zombies = [thing for thing in gym_env.game.world.things.values() if isinstance(thing, Zombie)]
     assert len(zombies) > 0
