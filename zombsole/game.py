@@ -103,7 +103,6 @@ class Map(object):
             # We only process the line if it has positive length
             if line:
                 max_row = row_index
-                print(f"row_index: {row_index}, line length: {len(line)}")
 
                 for col_index, char in enumerate(line):
                     if char:
@@ -124,7 +123,6 @@ class Map(object):
 
         # At this point max_row and max_col indicate the maximum index value, so we add 1 
         # to indicate the total number of rows and columns.
-        print(f"max_row: {max_row}, max_col: {max_col}")
         max_row += 1
         max_col += 1
 
