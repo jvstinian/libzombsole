@@ -1,6 +1,10 @@
-# 0.8.4
+# 0.8.5
 
 Fixing the map size determined on map file read.
+
+# 0.8.4
+
+We add a render call to the interactive json application after `step` is called on the gymnasium environment. We previously added the renderer to the class but did not call it.
 
 # 0.8.3
 
