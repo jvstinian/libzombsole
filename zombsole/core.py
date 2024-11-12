@@ -146,19 +146,22 @@ class World(object):
             raise Exception(
                 u'Destination of movement should be a tuple or list')
 
-        obstacle = self.things.get(destination)
-        if obstacle is not None:
-            event = u'hit %s with his head' % obstacle.name
-        elif distance(thing.position, destination) > 1:
-            event = u'tried to walk too fast, but physics forbade it'
-        else:
-            # we store position in the things, because they need to know it,
-            # but also in our dict, for faster access
-            self.things[destination] = thing
-            del self.things[thing.position]
-            thing.position = destination
+        if self.within_bounds(destination):
+            obstacle = self.things.get(destination)
+            if obstacle is not None:
+                event = u'hit %s with his head' % obstacle.name
+            elif distance(thing.position, destination) > 1:
+                event = u'tried to walk too fast, but physics forbade it'
+            else:
+                # we store position in the things, because they need to know it,
+                # but also in our dict, for faster access
+                self.things[destination] = thing
+                del self.things[thing.position]
+                thing.position = destination
 
-            event = u'moved to ' + str(destination)
+                event = u'moved to ' + str(destination)
+        else:
+                event = u'Tried to move out of bounds to %s' % destination
 
         return event
 
