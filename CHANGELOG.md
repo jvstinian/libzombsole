@@ -1,3 +1,7 @@
+# 0.8.7
+
+Making sure the players remain in bounds when moving.
+
 # 0.8.6
 
 Fixing action space on discrete action wrapper of gymnasium environment.
