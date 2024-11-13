@@ -1,3 +1,7 @@
+# 0.8.8
+
+Coercing observations to use int32 to align with observation space specification.
+
 # 0.8.7
 
 Making sure the players remain in bounds when moving.
