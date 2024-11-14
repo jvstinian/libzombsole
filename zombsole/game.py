@@ -7,6 +7,7 @@ import sys
 import time
 from termcolor import colored
 
+from zombsole.rules.factory import RulesFactory
 from zombsole.core import World
 from zombsole.things import Box, Wall, Zombie, ObjectiveLocation, Player
 from zombsole.renderer import TerminalRenderer, OpencvRenderer
@@ -30,41 +31,9 @@ def create_player(name, rules_name, objectives):
     return creator(rules_name, objectives)
 
 
-def create_rules(name, game):
-    creator = get_creator('zombsole.rules.' + name)
-    return creator(game)
-
-
-class Rules(object):
-    """Rules to decide when a game ends, and when it's won."""
-    def __init__(self, game):
-        self.game = game
-
-    def players_alive(self):
-        """Are there any alive players?"""
-        for player in self.game.get_all_players():
-            if player.life > 0:
-                return True
-        return False
-
-    def agents_alive(self):
-        """Are there any agents alive?"""
-        for player in self.game.agents:
-            if player.life > 0:
-                return True
-        return False
-
-    def game_ended(self):
-        """Has the game ended?"""
-        return not self.players_alive()
-
-    def game_won(self):
-        """Was the game won?"""
-        if self.players_alive():
-            # never should happen, but illustrative
-            return True, u'you won a game that never ends (?!)'
-        else:
-            return False, u'everybody is dead :('
+# def create_rules(name, game):
+#     creator = get_creator('zombsole.rules.' + name)
+#     return creator(game)
 
 
 class Map(object):
@@ -156,7 +125,8 @@ class Game(object):
         self.players = []
 
         self.rules_name = rules_name
-        self.rules = get_creator('zombsole.rules.' + rules_name)(self)
+        # self.rules = get_creator('zombsole.rules.' + rules_name)(self)
+        self.rules = RulesFactory.create_rules(rules_name)
         self.map = map_
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies

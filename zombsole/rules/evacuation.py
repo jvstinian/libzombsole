@@ -1,5 +1,5 @@
 # coding: utf-8
-from zombsole.game import Rules
+from zombsole.rules.rules import Rules
 from zombsole.utils import adjacent_positions
 
 
