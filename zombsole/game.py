@@ -40,9 +40,9 @@ class Rules(object):
     def __init__(self, game):
         self.game = game
 
-    def player_or_agent_alive(self):
+    def players_alive(self):
         """Are there any alive players?"""
-        for player in (self.game.players + self.game.agents):
+        for player in self.game.get_all_players():
             if player.life > 0:
                 return True
         return False
@@ -56,11 +56,11 @@ class Rules(object):
 
     def game_ended(self):
         """Has the game ended?"""
-        return not self.player_or_agent_alive()
+        return not self.players_alive()
 
     def game_won(self):
         """Was the game won?"""
-        if self.player_or_agent_alive():
+        if self.players_alive():
             # never should happen, but illustrative
             return True, u'you won a game that never ends (?!)'
         else:
@@ -190,6 +190,10 @@ class Game(object):
         self.spawn_players()
         self.spawn_agents()
         self.spawn_zombies(self.initial_zombies)
+
+    # Return both players and agents
+    def get_all_players(self):
+        return (self.players + self.agents)
 
     def get_agents_health(self):
         return sum([thing.life for thing in self.agents])
