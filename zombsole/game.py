@@ -40,7 +40,7 @@ class Rules(object):
     def __init__(self, game):
         self.game = game
 
-    def players_alive(self):
+    def player_or_agent_alive(self):
         """Are there any alive players?"""
         for player in (self.game.players + self.game.agents):
             if player.life > 0:
@@ -56,11 +56,11 @@ class Rules(object):
 
     def game_ended(self):
         """Has the game ended?"""
-        return not self.players_alive()
+        return not self.player_or_agent_alive()
 
     def game_won(self):
         """Was the game won?"""
-        if self.players_alive():
+        if self.player_or_agent_alive():
             # never should happen, but illustrative
             return True, u'you won a game that never ends (?!)'
         else:

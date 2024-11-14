@@ -10,7 +10,7 @@ class SafeHouseRules(Rules):
     def alive_players_in_house(self):
         """Are the alive players in the safe house (objective locations)?"""
         in_house = [player.position in self.game.map.objectives
-                    for player in self.game.players
+                    for player in (self.game.players + self.game.agents)
                     if player.life > 0]
         return all(in_house)
 
@@ -19,14 +19,14 @@ class SafeHouseRules(Rules):
         if self.game.map.objectives is None:
             raise Exception('Safe house game requires objectives defined.')
 
-        if self.players_alive():
+        if self.player_or_agent_alive():
             return self.alive_players_in_house()
         else:
             return True
 
     def game_won(self):
         """Was the game won?"""
-        if self.players_alive():
+        if self.player_or_agent_alive():
             return True, u'everybody made it into the safehouse :)'
         else:
             return False, u'nobody made it into the safehouse :('
