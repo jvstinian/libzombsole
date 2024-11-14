@@ -126,7 +126,7 @@ class Game(object):
 
         self.rules_name = rules_name
         # self.rules = get_creator('zombsole.rules.' + rules_name)(self)
-        self.rules = RulesFactory.create_rules(rules_name)
+        self.rules = RulesFactory.create_rules(rules_name, self)
         self.map = map_
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
