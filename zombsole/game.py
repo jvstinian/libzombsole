@@ -30,12 +30,6 @@ def create_player(name, rules_name, objectives):
     creator = get_creator('zombsole.players.' + name)
     return creator(rules_name, objectives)
 
-
-# def create_rules(name, game):
-#     creator = get_creator('zombsole.rules.' + name)
-#     return creator(game)
-
-
 class Map(object):
     """A map for a world."""
     def __init__(self, size, things, player_spawns=None, zombie_spawns=None,
@@ -125,7 +119,6 @@ class Game(object):
         self.players = []
 
         self.rules_name = rules_name
-        # self.rules = get_creator('zombsole.rules.' + rules_name)(self)
         self.rules = RulesFactory.create_rules(rules_name, self)
         self.map = map_
         self.initial_zombies = initial_zombies
