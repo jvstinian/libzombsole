@@ -124,7 +124,7 @@ class WorldSimpleObservation(SinglePlayerObservation):
         self.map_size = map_size
 
     def get_observation(self, game: Game):
-        observation = np.array(SinglePlayerObservation.encode_world_simple(game.world))
+        observation = np.array(SinglePlayerObservation.encode_world_simple(game.world), dtype=np.int32)
         return observation.reshape( (1,) + observation.shape )
 
     def get_observation_space(self):
@@ -136,7 +136,7 @@ class WorldChannelsObservation(SinglePlayerObservation):
         self.map_size = map_size
 
     def get_observation(self, game: Game):
-        return np.array(SinglePlayerObservation.encode_world_with_channels(game.world)).transpose((2, 0, 1))
+        return np.array(SinglePlayerObservation.encode_world_with_channels(game.world), dtype=np.int32).transpose((2, 0, 1))
 
     def get_observation_space(self):
         return Box(low=0, high=128, shape=(3, self.map_size[1], self.map_size[0]), dtype=np.int32)
@@ -149,7 +149,7 @@ class SurroundingsSimpleObservation(SinglePlayerObservation):
 
     def get_observation(self, game: Game):
         agent = game.agents[0]
-        observation = np.array(SinglePlayerObservation.encode_surroundings_simple(game.world, agent.position, self.half_width))
+        observation = np.array(SinglePlayerObservation.encode_surroundings_simple(game.world, agent.position, self.half_width), dtype=np.int32)
         return observation.reshape( (1,) + observation.shape )
 
     def get_observation_space(self):
@@ -163,7 +163,7 @@ class SurroundingsChannelsObservation(SinglePlayerObservation):
 
     def get_observation(self, game: Game):
         agent = game.agents[0]
-        return np.array(SinglePlayerObservation.encode_surroundings_with_channels(game.world, agent.position, self.half_width)).transpose((2, 0, 1))
+        return np.array(SinglePlayerObservation.encode_surroundings_with_channels(game.world, agent.position, self.half_width), dtype=np.int32).transpose((2, 0, 1))
 
     def get_observation_space(self):
         return Box(low=0, high=128, shape=(3, self.width, self.width), dtype=np.int32)
