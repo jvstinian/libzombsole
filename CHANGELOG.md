@@ -1,3 +1,7 @@
+# 0.8.9
+
+Fixing safehouse and evacuation rules to consider agents in addition to legacy players.
+
 # 0.8.8
 
 Coercing observations to use int32 to align with observation space specification.
