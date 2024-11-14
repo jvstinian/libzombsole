@@ -12,7 +12,7 @@ class EvacuationRules(Rules):
 
     def get_alive_players(self):
         """Get the alive players."""
-        return [player for player in self.game.get_alive_players()
+        return [player for player in self.game.get_all_players()
                 if player.life > 0]
 
     def alive_players_together(self):
@@ -40,7 +40,7 @@ class EvacuationRules(Rules):
     def half_team_alive(self):
         """At least half of the original team alive?"""
         alive_players = self.get_alive_players()
-        return len(alive_players) >= len(self.game.get_alive_players()) / 2.0
+        return len(alive_players) >= len(self.game.get_all_players()) / 2.0
 
     def game_ended(self):
         """Has the game ended?"""
