@@ -42,7 +42,7 @@ class Rules(object):
 
     def players_alive(self):
         """Are there any alive players?"""
-        for player in (self.game.players + self.game.agents):
+        for player in self.game.get_all_players():
             if player.life > 0:
                 return True
         return False
@@ -190,6 +190,10 @@ class Game(object):
         self.spawn_players()
         self.spawn_agents()
         self.spawn_zombies(self.initial_zombies)
+
+    # Return both players and agents
+    def get_all_players(self):
+        return (self.players + self.agents)
 
     def get_agents_health(self):
         return sum([thing.life for thing in self.agents])

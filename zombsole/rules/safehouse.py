@@ -10,7 +10,7 @@ class SafeHouseRules(Rules):
     def alive_players_in_house(self):
         """Are the alive players in the safe house (objective locations)?"""
         in_house = [player.position in self.game.map.objectives
-                    for player in self.game.players
+                    for player in self.game.get_all_players()
                     if player.life > 0]
         return all(in_house)
 
