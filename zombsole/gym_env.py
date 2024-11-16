@@ -70,8 +70,8 @@ class ZombsoleGymEnv(object):
         self.reward_tracker = AgentRewards(
             self.game.agents,
             self.game.world,
-            0.0, # TODO
-            include_life_in_reward=False # TODO: Revisit this
+            10.0, # TODO
+            include_life_in_reward=True # TODO: Revisit this
         )
 
     def get_observation(self):
