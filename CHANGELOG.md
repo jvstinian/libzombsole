@@ -1,3 +1,7 @@
+# 0.8.10
+
+Refactoring rules.
+
 # 0.8.9
 
 Fixing safehouse and evacuation rules to consider agents in addition to legacy players.
