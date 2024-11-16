@@ -5,6 +5,7 @@ from gym.core import Env
 from gym.spaces import Text, Box, Dict
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import build_observation
+from zombsole.gym.reward import AgentRewards
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
 import time
@@ -66,6 +67,13 @@ class ZombsoleGymEnv(object):
         )
         self.observation_space = self.observation_handler.get_observation_space()
 
+        self.reward_tracker = AgentRewards(
+            self.game.agents,
+            self.game.world,
+            0.0,
+            include_life_in_reward=False # TODO: Revisit this
+        )
+
     def get_observation(self):
         return self.observation_handler.get_observation(self.game)
     
@@ -92,7 +100,7 @@ class ZombsoleGymEnv(object):
 
         frames_per_second=None
 
-        zombie_deaths_0 = self.game.world.zombie_deaths 
+        zombie_deaths_0 = self.game.world.zombie_deaths # TODO
         # player_deaths_0 = self.game.world.player_deaths 
         # agent_deaths_0 = self.game.world.agent_deaths
         agents_health_0 = self.game.get_agents_health()
@@ -105,6 +113,8 @@ class ZombsoleGymEnv(object):
         # agent_deaths_1 = self.game.world.agent_deaths
         agents_health_1 = self.game.get_agents_health()
         players_health_1 = self.game.get_players_health()
+        
+        proposed_reward = self.reward_tracker.update(self.game.agents, self.game.world)
 
         # maintain the flow of zombies if necessary
         self.game.spawn_zombies_to_maintain_minimum()
@@ -116,14 +126,21 @@ class ZombsoleGymEnv(object):
         #          + 1.0*(min(players_health_1 - players_health_0, 0.0))/100.0 \
         #          - (agents_health_1 - agents_health_0)/100.0
 
+        assert reward == proposed_reward # TODO
+        print("Proposed reward: ", proposed_reward) # TODO
+
         done = False
         truncated = False
         if self.game.rules.game_ended():
             won, description = self.game.rules.game_won()
             done = True
+            end_reward = self.reward_tracker.get_game_end_reward(won)
+            reward += end_reward
         elif not self.game.rules.agents_alive():
             # Using truncated to indicate the agents are no longer alive
             truncated = True
+            end_reward = self.reward_tracker.get_game_end_reward(False)
+            reward += end_reward
         
         info = {}
 
@@ -144,6 +161,7 @@ class ZombsoleGymEnv(object):
             observation (object): the initial observation.
         """
         self.game.__initialize_world__()
+        self.reward_tracker.reset(self.game.agents, self.game.world)
         return self.get_observation()
 
     def render(self, mode='human'):
@@ -290,8 +308,8 @@ class Wrapper(Env):
     def seed(self, seed=None):
         return self.env.seed(seed)
 
-    def compute_reward(self, achieved_goal, desired_goal, info):
-        return self.env.compute_reward(achieved_goal, desired_goal, info)
+    # def compute_reward(self, achieved_goal, desired_goal, info):
+    #     return self.env.compute_reward(achieved_goal, desired_goal, info)
 
     def __str__(self):
         return '<{}{}>'.format(type(self).__name__, self.env)
