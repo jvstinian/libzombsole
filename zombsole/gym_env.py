@@ -70,7 +70,7 @@ class ZombsoleGymEnv(object):
         self.reward_tracker = AgentRewards(
             self.game.agents,
             self.game.world,
-            0.0,
+            0.0, # TODO
             include_life_in_reward=False # TODO: Revisit this
         )
 
@@ -100,17 +100,13 @@ class ZombsoleGymEnv(object):
 
         frames_per_second=None
 
-        zombie_deaths_0 = self.game.world.zombie_deaths # TODO
-        # player_deaths_0 = self.game.world.player_deaths 
-        # agent_deaths_0 = self.game.world.agent_deaths
+        zombie_deaths_0 = self.game.world.zombie_deaths # TODO: Remove
         agents_health_0 = self.game.get_agents_health()
         players_health_0 = self.game.get_players_health()
 
         self.game.world.step()
         
         zombie_deaths_1 = self.game.world.zombie_deaths 
-        # player_deaths_1 = self.game.world.player_deaths 
-        # agent_deaths_1 = self.game.world.agent_deaths
         agents_health_1 = self.game.get_agents_health()
         players_health_1 = self.game.get_players_health()
         
@@ -122,9 +118,7 @@ class ZombsoleGymEnv(object):
         observation = self.get_observation()
         if frames_per_second is not None:
             time.sleep(1.0 / frames_per_second)
-        reward = (zombie_deaths_1 - zombie_deaths_0) # \
-        #          + 1.0*(min(players_health_1 - players_health_0, 0.0))/100.0 \
-        #          - (agents_health_1 - agents_health_0)/100.0
+        reward = (zombie_deaths_1 - zombie_deaths_0)
 
         assert reward == proposed_reward # TODO
         print("Proposed reward: ", proposed_reward) # TODO
