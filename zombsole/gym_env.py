@@ -100,17 +100,17 @@ class ZombsoleGymEnv(object):
 
         frames_per_second=None
 
-        zombie_deaths_0 = self.game.world.zombie_deaths # TODO: Remove
-        agents_health_0 = self.game.get_agents_health()
-        players_health_0 = self.game.get_players_health()
+        # zombie_deaths_0 = self.game.world.zombie_deaths # TODO: Remove
+        # agents_health_0 = self.game.get_agents_health()
+        # players_health_0 = self.game.get_players_health()
 
         self.game.world.step()
         
-        zombie_deaths_1 = self.game.world.zombie_deaths 
-        agents_health_1 = self.game.get_agents_health()
-        players_health_1 = self.game.get_players_health()
+        # zombie_deaths_1 = self.game.world.zombie_deaths 
+        # agents_health_1 = self.game.get_agents_health()
+        # players_health_1 = self.game.get_players_health()
         
-        proposed_reward = self.reward_tracker.update(self.game.agents, self.game.world)
+        reward = self.reward_tracker.update(self.game.agents, self.game.world)
 
         # maintain the flow of zombies if necessary
         self.game.spawn_zombies_to_maintain_minimum()
@@ -118,10 +118,9 @@ class ZombsoleGymEnv(object):
         observation = self.get_observation()
         if frames_per_second is not None:
             time.sleep(1.0 / frames_per_second)
-        reward = (zombie_deaths_1 - zombie_deaths_0)
+        # reward = (zombie_deaths_1 - zombie_deaths_0)
 
-        assert reward == proposed_reward # TODO
-        print("Proposed reward: ", proposed_reward) # TODO
+        # assert reward == proposed_reward # TODO
 
         done = False
         truncated = False
@@ -137,6 +136,8 @@ class ZombsoleGymEnv(object):
             reward += end_reward
         
         info = {}
+
+        print("The total reward (including end game): ", reward) # TODO
 
         return observation, reward, done, truncated, info
 
