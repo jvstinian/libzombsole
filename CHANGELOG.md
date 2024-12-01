@@ -1,3 +1,7 @@
+# 0.9.0
+
+Separating the logic for calculating rewards for single agent environments into a separate class.
+
 # 0.8.10
 
 Refactoring rules.
