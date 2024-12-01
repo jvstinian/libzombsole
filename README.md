@@ -9,6 +9,7 @@ the commit history.
 
 We make some other changes as well, including 
 * refactoring the code to be a python package that can be installed using `pip`,
+* adding some very simple test cases,
 * adapting the game play to the Gymnasium API,
 * introducing multi-agent play, and
 * adding support for rendering with `OpenCV` and `pillow`.
