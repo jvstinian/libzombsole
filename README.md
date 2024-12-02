@@ -7,8 +7,12 @@ The author of this repo chose to mirror the original repo
 so as to give credit to the original contributors by preserving 
 the commit history. 
 
-We make some other changes as well, including refactoring the code 
-to be a python package that can be installed using `pip`. 
+We make some other changes as well, including 
+* refactoring the code to be a python package that can be installed using `pip`,
+* adding some very simple test cases,
+* adapting the game play to the Gymnasium API,
+* introducing multi-agent play, and
+* adding support for rendering with `OpenCV` and `pillow`.
 
 # Installing
 
