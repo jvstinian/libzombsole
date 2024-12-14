@@ -46,7 +46,6 @@ class AgentRewards(AgentRewardsInterface):
         else:
             return -1*self.game_end_value
  
-
 # class MultiAgentRewardsInterface(ABC):
 #     @abstractmethod
 #     def reset(self) -> None:
