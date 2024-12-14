@@ -5,6 +5,7 @@ from gym.core import Env
 from gym.spaces import Text, Box, Dict, Sequence
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import SurroundingsChannelsObservation
+from zombsole.gym.reward import AgentRewards # MultiAgentRewards
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
 import time
@@ -29,6 +30,7 @@ class MultiagentZombsoleEnv(object):
     )
 
     # setting observation_space in the constructor with the help of the following
+    # TODO: Why is half_width used in the following?
     def _get_observation_space(self, half_width):
         return Sequence(
             Dict({
@@ -59,6 +61,13 @@ class MultiagentZombsoleEnv(object):
         self.surroundings_half_width = observation_surroundings_width // 2
         self.single_agent_observation = SurroundingsChannelsObservation(self.surroundings_width)
         self.observation_space = self._get_observation_space(self.surroundings_half_width)
+
+        self.reward_tracker = AgentRewards(
+            self.game.agents,
+            self.game.world,
+            10.0,
+            include_life_in_reward=True
+        )
 
     def get_observation(self):
         return [
@@ -103,19 +112,21 @@ class MultiagentZombsoleEnv(object):
 
         frames_per_second=None
 
-        zombie_deaths_0 = self.game.world.zombie_deaths 
-        # player_deaths_0 = self.game.world.player_deaths 
-        # agent_deaths_0 = self.game.world.agent_deaths
-        agents_health_0 = self.game.get_agents_health()
-        players_health_0 = self.game.get_players_health()
+        # zombie_deaths_0 = self.game.world.zombie_deaths 
+        # # player_deaths_0 = self.game.world.player_deaths 
+        # # agent_deaths_0 = self.game.world.agent_deaths
+        # agents_health_0 = self.game.get_agents_health()
+        # players_health_0 = self.game.get_players_health()
 
         self.game.world.step()
         
-        zombie_deaths_1 = self.game.world.zombie_deaths 
-        # player_deaths_1 = self.game.world.player_deaths 
-        # agent_deaths_1 = self.game.world.agent_deaths
-        agents_health_1 = self.game.get_agents_health()
-        players_health_1 = self.game.get_players_health()
+        # zombie_deaths_1 = self.game.world.zombie_deaths 
+        # # player_deaths_1 = self.game.world.player_deaths 
+        # # agent_deaths_1 = self.game.world.agent_deaths
+        # agents_health_1 = self.game.get_agents_health()
+        # players_health_1 = self.game.get_players_health()
+
+        reward = self.reward_tracker.update(self.game.agents, self.game.world)
 
         # maintain the flow of zombies if necessary
         self.game.spawn_zombies_to_maintain_minimum()
@@ -123,18 +134,24 @@ class MultiagentZombsoleEnv(object):
         observation = self.get_observation()
         if frames_per_second is not None:
             time.sleep(1.0 / frames_per_second)
-        reward = (zombie_deaths_1 - zombie_deaths_0) # \
-        #          + 1.0*(min(players_health_1 - players_health_0, 0.0))/100.0 \
-        #          - (agents_health_1 - agents_health_0)/100.0
+        # reward = (zombie_deaths_1 - zombie_deaths_0) # \
+        # #          + 1.0*(min(players_health_1 - players_health_0, 0.0))/100.0 \
+        # #          - (agents_health_1 - agents_health_0)/100.0
 
         done = False
         truncated = False
         if self.game.rules.game_ended():
             won, description = self.game.rules.game_won()
             done = True
+            end_reward = self.reward_tracker.get_game_end_reward(won)
+            # reward = list(map(lambda rs: rs[0] + rs[1], zip(reward, end_reward)))
+            reward += end_reward
         elif not self.game.rules.agents_alive():
             # Using truncated to indicate the agents are no longer alive
             truncated = True
+            end_reward = self.reward_tracker.get_game_end_reward(False)
+            # reward = list(map(lambda rs: rs[0] + rs[1], zip(reward, end_reward)))
+            reward += end_reward
         
         info = {}
 
@@ -155,6 +172,7 @@ class MultiagentZombsoleEnv(object):
             observation (object): the initial observation.
         """
         self.game.__initialize_world__()
+        self.reward_tracker.reset(self.game.agents, self.game.world)
         return self.get_observation()
 
     def render(self, mode='human'):

@@ -1,7 +1,12 @@
+from typing import List
 from abc import ABC, abstractmethod
 
 
 class AgentRewardsInterface(ABC):
+    @abstractmethod
+    def reset(self) -> None:
+        pass
+    
     @abstractmethod
     def get_total_reward(self) -> float:
         pass
@@ -40,4 +45,55 @@ class AgentRewards(AgentRewardsInterface):
             return self.game_end_value
         else:
             return -1*self.game_end_value
+ 
+
+# class MultiAgentRewardsInterface(ABC):
+#     @abstractmethod
+#     def reset(self) -> None:
+#         pass
+#     
+#     @abstractmethod
+#     def get_total_rewards(self) -> Tuple[float, List[float]]:
+#         pass
+#     
+#     @abstractmethod
+#     def get_game_end_reward(self, won: bool) -> float:
+#         pass
+# 
+# 
+# class MultiAgentRewards(MultiAgentRewardsInterface):
+#     def __init__(self, agents, world, game_end_value, include_life_in_reward=True):
+#         self.agents_life = [agent.life for agent in agents]
+#         self.zombie_deaths = 0
+#         self.game_end_value = game_end_value
+#         self.include_life_in_reward = include_life_in_reward
+#     
+#     def reset(self, agents, world):
+#         self.agents_life = [agent.life for agent in agents]
+#         self.zombie_deaths = 0
+# 
+#     def update(self, agents, world):
+#         prev_reward = self.get_total_reward()
+#         for idx in range(0, len(self.agents_life)):
+#             self.agents_life[idx] = agents[idx].life
+#         self.zombie_deaths = world.zombie_deaths
+#         return list(
+#             map(
+#                 lambda vals: vals[1] - vals[0], 
+#                 zip(prev_reward, self.get_total_reward())
+#             )
+#         )
+
+#     def get_total_rewards(self):
+#         shared_reward = self.zombie_deaths
+#         agent_rewards = [0.0] ** len(self.agents_life)
+#         if self.include_life_in_reward:
+#             agent_rewards = list(map(lambda life: life/100.0, self.agents_life))
+#         return (shared_reward,  agent_rewards)
+# 
+#     def get_game_end_rewards(self, won: bool):
+#         if won:
+#             return self.game_end_value
+#         else:
+#             return -1*self.game_end_value
  
