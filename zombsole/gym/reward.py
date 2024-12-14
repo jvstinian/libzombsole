@@ -105,7 +105,7 @@ class AgentRewards(AgentRewardsInterface):
 #             agent_rewards = list(map(lambda life: life/100.0, self.agents_life))
 #         return (shared_reward,  agent_rewards)
 # 
-#     def get_game_end_rewards(self, won: bool):
+#     def get_game_end_reward(self, won: bool):
 #         if won:
 #             return self.game_end_value
 #         else:
