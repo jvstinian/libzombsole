@@ -5,7 +5,7 @@ from gym.core import Env
 from gym.spaces import Text, Box, Dict, Sequence
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import SurroundingsChannelsObservation
-from zombsole.gym.reward import AgentRewards # MultiAgentRewards
+from zombsole.gym.reward import AgentRewards
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
 import time
@@ -114,20 +114,8 @@ class MultiagentZombsoleEnv(object):
 
         frames_per_second=None
 
-        # zombie_deaths_0 = self.game.world.zombie_deaths 
-        # # player_deaths_0 = self.game.world.player_deaths 
-        # # agent_deaths_0 = self.game.world.agent_deaths
-        # agents_health_0 = self.game.get_agents_health()
-        # players_health_0 = self.game.get_players_health()
-
         self.game.world.step()
         
-        # zombie_deaths_1 = self.game.world.zombie_deaths 
-        # # player_deaths_1 = self.game.world.player_deaths 
-        # # agent_deaths_1 = self.game.world.agent_deaths
-        # agents_health_1 = self.game.get_agents_health()
-        # players_health_1 = self.game.get_players_health()
-
         reward = self.reward_tracker.update(self.game.agents, self.game.world)
 
         # maintain the flow of zombies if necessary
@@ -136,9 +124,6 @@ class MultiagentZombsoleEnv(object):
         observation = self.get_observation()
         if frames_per_second is not None:
             time.sleep(1.0 / frames_per_second)
-        # reward = (zombie_deaths_1 - zombie_deaths_0) # \
-        # #          + 1.0*(min(players_health_1 - players_health_0, 0.0))/100.0 \
-        # #          - (agents_health_1 - agents_health_0)/100.0
 
         done = False
         truncated = False
@@ -146,13 +131,11 @@ class MultiagentZombsoleEnv(object):
             won, description = self.game.rules.game_won()
             done = True
             end_reward = self.reward_tracker.get_game_end_reward(won)
-            # reward = list(map(lambda rs: rs[0] + rs[1], zip(reward, end_reward)))
             reward += end_reward
         elif not self.game.rules.agents_alive():
             # Using truncated to indicate the agents are no longer alive
             truncated = True
             end_reward = self.reward_tracker.get_game_end_reward(False)
-            # reward = list(map(lambda rs: rs[0] + rs[1], zip(reward, end_reward)))
             reward += end_reward
         
         info = {}
