@@ -23,8 +23,6 @@ def get_creator(module_name):
 
 # More or less following the approach for player and rules
 def create_agent(agent_id, weapon_name, rules_name, objectives):
-    # from zombsole.weapons import Rifle
-    print(f"weapon: {weapon_name}")
     weapon = WeaponFactory.create_player_weapon(weapon_name)
     creator = get_creator('zombsole.players.agent')
     return creator(agent_id, weapon, rules_name, objectives)
@@ -162,7 +160,6 @@ class Game(object):
                         for name in self.player_names]
 
         if self.agent_ids:
-            # self.agent_weapons = ["rifle"] * len(self.agent_ids)
             self.agents = [create_agent(agent_id, weapon_name, self.rules_name, self.map.objectives)
                            for agent_id, weapon_name in zip(self.agent_ids, self.agent_weapons)]
         else:
