@@ -1,3 +1,8 @@
+# 0.9.2
+
+Adding functionality for specifying the weapons provided to the agents.
+This includes allowing for a weapon to be chosen randomly when the agent is created.
+
 # 0.9.1
 
 Using the rewards class for tracking rewards in the multi-agent environment.
