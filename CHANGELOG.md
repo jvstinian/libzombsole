@@ -1,6 +1,6 @@
 # 0.9.1
 
-Using the rewards class for tracking reward in the multi-agent environment.
+Using the rewards class for tracking rewards in the multi-agent environment.
 
 # 0.9.0
 
