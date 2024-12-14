@@ -42,7 +42,8 @@ class MultiagentZombsoleEnv(object):
 
     def __init__(self, rules_name, player_names, map_name, agent_ids, initial_zombies=0,
                  minimum_zombies=0, renderer=NoRender(), 
-                 observation_surroundings_width=21, 
+                 observation_surroundings_width=21,
+                 agent_weapons="rifle",
                  debug=False):
         fdir = path.dirname(path.abspath(__file__))
         map_file = path.join(fdir, '..', 'maps', map_name)
@@ -54,6 +55,7 @@ class MultiagentZombsoleEnv(object):
             use_basic_icons=True,
             agent_ids=agent_ids,
             renderer=renderer,
+            agent_weapons=agent_weapons,
             debug=debug,
         )
 
