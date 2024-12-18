@@ -1,3 +1,7 @@
+# 0.9.3
+
+Fixing the observation space box size used in the multi-agent environment.
+
 # 0.9.2
 
 Adding functionality for specifying the weapons provided to the agents.
