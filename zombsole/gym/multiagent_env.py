@@ -30,12 +30,11 @@ class MultiagentZombsoleEnv(object):
     )
 
     # setting observation_space in the constructor with the help of the following
-    # TODO: Why is half_width used in the following?
-    def _get_observation_space(self, half_width):
+    def _get_observation_space(self, width):
         return Sequence(
             Dict({
                 "agent_id": Discrete(64),
-                "observation": Box(low=0, high=128, shape=(3, half_width, half_width), dtype=np.int32)
+                "observation": Box(low=0, high=128, shape=(3, width, width), dtype=np.int32)
             })
         )
 
@@ -60,9 +59,8 @@ class MultiagentZombsoleEnv(object):
         )
 
         self.surroundings_width = observation_surroundings_width
-        self.surroundings_half_width = observation_surroundings_width // 2
         self.single_agent_observation = SurroundingsChannelsObservation(self.surroundings_width)
-        self.observation_space = self._get_observation_space(self.surroundings_half_width)
+        self.observation_space = self._get_observation_space(self.surroundings_width)
 
         self.reward_tracker = AgentRewards(
             self.game.agents,
