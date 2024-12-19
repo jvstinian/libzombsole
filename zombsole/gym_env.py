@@ -48,6 +48,7 @@ class ZombsoleGymEnv(object):
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
                  minimum_zombies=0, renderer=NoRender(), 
                  observation_scope="world", observation_position_encoding="simple", 
+                 agent_weapon="rifle",
                  debug=False):
         fdir = path.dirname(path.abspath(__file__))
         map_file = path.join(fdir, 'maps', map_name)
@@ -59,6 +60,7 @@ class ZombsoleGymEnv(object):
             use_basic_icons=True,
             agent_ids=[agent_id],
             renderer=renderer,
+            agent_weapons=[agent_weapon],
             debug=debug,
         )
 

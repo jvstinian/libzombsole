@@ -11,6 +11,7 @@ from zombsole.rules.factory import RulesFactory
 from zombsole.core import World
 from zombsole.things import Box, Wall, Zombie, ObjectiveLocation, Player
 from zombsole.renderer import TerminalRenderer, OpencvRenderer
+from zombsole.weapons import WeaponFactory
 
 
 def get_creator(module_name):
@@ -21,10 +22,10 @@ def get_creator(module_name):
     return create_function
 
 # More or less following the approach for player and rules
-def create_agent(agent_id, rules_name, objectives):
-    from zombsole.weapons import Rifle
+def create_agent(agent_id, weapon_name, rules_name, objectives):
+    weapon = WeaponFactory.create_player_weapon(weapon_name)
     creator = get_creator('zombsole.players.agent')
-    return creator(agent_id, Rifle(), rules_name, objectives)
+    return creator(agent_id, weapon, rules_name, objectives)
 
 def create_player(name, rules_name, objectives):
     creator = get_creator('zombsole.players.' + name)
@@ -115,7 +116,8 @@ class Game(object):
                  minimum_zombies=0, debug=False,
                  use_basic_icons=False,
                  renderer=TerminalRenderer(False, debug=False),
-                 agent_ids = []):
+                 agent_ids = [],
+                 agent_weapons = "rifle"):
         self.players = []
 
         self.rules_name = rules_name
@@ -128,11 +130,24 @@ class Game(object):
 
         self.player_names = player_names
         self.agent_ids = agent_ids
+        # The following processes the provided weapon names into a list of weapon names 
+        # with length matching the length of agent_ids
+        self.__process_weapon_name_inputs__(agent_weapons)
         
         # Initialize world, players, agents
         self.__initialize_world__()
 
         self.renderer = renderer
+
+    def __process_weapon_name_inputs__(self, agent_weapons):
+        agent_count = len(self.agent_ids) if self.agent_ids else 0
+        if isinstance(agent_weapons, (str,)):
+            self.agent_weapons = [agent_weapons] * agent_count
+        elif isinstance(agent_weapons, (list,)):
+            from itertools import cycle, islice
+            self.agent_weapons = list(islice(cycle(agent_weapons), agent_count))
+        else:
+            raise ValueError(f"{agent_weapons} is not a valid value for argument agent_weapons.  Value must be the weapon name as a string or a list of weapon names.")
 
     def __initialize_world__(self):
         self.world = World(self.map.size, debug=self.debug)
@@ -145,8 +160,8 @@ class Game(object):
                         for name in self.player_names]
 
         if self.agent_ids:
-            self.agents = [create_agent(agent_id, self.rules_name, self.map.objectives)
-                           for agent_id in self.agent_ids]
+            self.agents = [create_agent(agent_id, weapon_name, self.rules_name, self.map.objectives)
+                           for agent_id, weapon_name in zip(self.agent_ids, self.agent_weapons)]
         else:
             self.agents = []
 
