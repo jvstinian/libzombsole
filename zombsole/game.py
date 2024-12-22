@@ -6,7 +6,7 @@ from os import path
 import sys
 import time
 from termcolor import colored
-
+from itertools import cycle, islice
 from zombsole.rules.factory import RulesFactory
 from zombsole.core import World
 from zombsole.things import Box, Wall, Zombie, ObjectiveLocation, Player
@@ -144,7 +144,6 @@ class Game(object):
         if isinstance(agent_weapons, (str,)):
             self.agent_weapons = [agent_weapons] * agent_count
         elif isinstance(agent_weapons, (list,)):
-            from itertools import cycle, islice
             self.agent_weapons = list(islice(cycle(agent_weapons), agent_count))
         else:
             raise ValueError(f"{agent_weapons} is not a valid value for argument agent_weapons.  Value must be the weapon name as a string or a list of weapon names.")
