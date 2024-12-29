@@ -387,7 +387,7 @@ class ZombsoleGymEnvDiscreteAction(Wrapper):
 
 
 register(
-    id='Zombsole-v0', 
+    id='jvstinian/Zombsole-v0', 
     entry_point='zombsole.gym_env:ZombsoleGymEnvDiscreteAction', 
     max_episode_steps=1000,
     kwargs={
@@ -402,7 +402,7 @@ register(
 )
 
 register(
-    id='Zombsole-SurroundingsView-v0', 
+    id='jvstinian/Zombsole-SurroundingsView-v0', 
     entry_point='zombsole.gym_env:ZombsoleGymEnvDiscreteAction', 
     max_episode_steps=1000,
     kwargs={
