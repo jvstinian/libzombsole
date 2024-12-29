@@ -4,6 +4,7 @@ from os import path, system
 from gym.core import Env
 from gym.spaces import Text, Box, Dict
 from gym.spaces.discrete import Discrete
+from gym.envs.registration import register
 from zombsole.gym.observation import build_observation
 from zombsole.gym.reward import AgentRewards
 from zombsole.game import Game, Map
