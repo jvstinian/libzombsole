@@ -385,3 +385,36 @@ class ZombsoleGymEnvDiscreteAction(Wrapper):
     def reverse_action(self, action):
         return self.game_actions.index(action)
 
+
+register(
+    id='Zombsole-v0', 
+    entry_point='zombsole.gym_env:ZombsoleGymEnvDiscreteAction', 
+    max_episode_steps=1000,
+    kwargs={
+        'rules_name': 'extermination',
+        'player_names': [],
+        'map_name': 'bridge',
+        'agent_id': 0,
+        'initial_zombies': 10,
+        'minimum_zombies': 0,
+        'debug': False
+    }
+)
+
+register(
+    id='Zombsole-SurroundingsView-v0', 
+    entry_point='zombsole.gym_env:ZombsoleGymEnvDiscreteAction', 
+    max_episode_steps=1000,
+    kwargs={
+        'rules_name': 'extermination',
+        'player_names': [],
+        'map_name': 'bridge',
+        'agent_id': 0,
+        'initial_zombies': 10,
+        'minimum_zombies': 0,
+        'observation_scope': 'surroundings:21',
+        'observation_position_encoding': 'simple',
+        'debug': False
+    }
+)
+
