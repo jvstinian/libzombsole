@@ -1,8 +1,13 @@
 # tests/test_gym_env.py
 import pytest
+import gym
 from zombsole.gym_env import ZombsoleGymEnv
 from zombsole.renderer import NoRender
 
+
+def test_gym_env_registry():
+    assert "jvstinian/Zombsole-v0" in gym.envs.registry.keys()
+    assert "jvstinian/Zombsole-Sorroundings-v0" in gym.envs.registry.keys()
 
 @pytest.mark.parametrize("scope,position_encoding", [("world", "simple"), ("world", "channels")])
 def test_observations_world(scope, position_encoding):
