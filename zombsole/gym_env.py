@@ -81,7 +81,6 @@ class ZombsoleGymEnv(object):
         return self.observation_handler.get_observation(self.game)
     
     def get_frame_size(self):
-        # return tuple(reversed(self.game.map.size))
         return tuple(self.observation_space.shape[1:3])
 
     def step(self, action):
