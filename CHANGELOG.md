@@ -1,3 +1,9 @@
+# 0.10.0
+
+Registering two gym environments, 
+* jvstinian/Zombsole-v0, which uses the world scope, and 
+* jvstinian/Zombsole-SurroundingsView-v0, which uses the surroundings scope with a width of 21.
+
 # 0.9.3
 
 Fixing the observation space box size used in the multi-agent environment.
