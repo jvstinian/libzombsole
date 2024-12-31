@@ -1,3 +1,7 @@
+# 0.10.1
+
+Fixing frame size definition in single-agent gym environment to support each observation style.
+
 # 0.10.0
 
 Registering two gym environments, 
