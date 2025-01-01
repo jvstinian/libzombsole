@@ -1,3 +1,8 @@
+# 0.11.0
+
+Adjusting the reset method in gym implementations to return both an initial observation and an info dictionary.
+This is to align with the gym specification.
+
 # 0.10.1
 
 Fixing frame size definition in single-agent gym environment to support each observation style.
