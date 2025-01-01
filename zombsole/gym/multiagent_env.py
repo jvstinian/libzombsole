@@ -156,7 +156,7 @@ class MultiagentZombsoleEnv(object):
         """
         self.game.__initialize_world__()
         self.reward_tracker.reset(self.game.agents, self.game.world)
-        return self.get_observation()
+        return self.get_observation(), {}
 
     def render(self, mode='human'):
         """Renders the environment.  Only 'human' is supported in this implementation.
