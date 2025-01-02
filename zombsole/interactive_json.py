@@ -290,7 +290,8 @@ class GymEnvManager(GameManagementInterface):
             return observation.tolist()
 
     def start_game(self):
-        observation = self._observation_json_ready(self.gym_env.reset())
+        origobs, _ = self.gym_env.reset()
+        observation = self._observation_json_ready(origobs)
         self.last_observation = {
             "observation": observation,
             "reward": 0,
