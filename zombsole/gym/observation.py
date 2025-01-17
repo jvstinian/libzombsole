@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
-from gym.spaces import Box
+from gymnasium.spaces import Box
 from zombsole.game import Game
 from zombsole.things import Wall
 import numpy as np
