@@ -279,25 +279,40 @@ class GymEnvManager(GameManagementInterface):
     def _observation_json_ready(self, observation):
         # Convert numpy arrays to python lists for JSON serialization
         if self.use_multiagent_env:
+            ret = {}
             # Go through the observation records, and convert numpy arrays to python lists
-            for agentobs in observation:
-                if "observation" in agentobs: # this should always be the case
-                    agentobs.update(
-                        {"observation": agentobs.get("observation").tolist()}
-                    )
-            return observation
+            # TODO: This probably needs to be updated
+            for agent_id in observation:
+                ret[agent_id] = observation[agent_id].tolist()
+            return ret
         else: # single-agent
             return observation.tolist()
+    
+    def _initial_values(self, agent_ids):
+        if self.use_multiagent_env:
+            reward = {agent_id: 0 for agent_id in agent_ids}
+            done = {agent_id: False for agent_id in agent_ids}
+            truncated = {agent_id: False for agent_id in agent_ids}
+            info = {}
+            return reward, done, truncated, info
+        else:
+            reward = 0
+            done = False
+            truncated = False
+            info = None
+            return reward, done, truncated, info
 
     def start_game(self):
         origobs, _ = self.gym_env.reset()
         observation = self._observation_json_ready(origobs)
+        reward, done, truncated, info = self._initial_values(observation.keys())
+        # TODO: The following doesn't work for multi-agent anymore
         self.last_observation = {
             "observation": observation,
-            "reward": 0,
-            "done": False,
-            "truncated": False,
-            "info": None
+            "reward": reward,
+            "done": done,
+            "truncated": truncated,
+            "info": info
         }
         self._resposne_to_stdout(
             GameObservationResponse(
