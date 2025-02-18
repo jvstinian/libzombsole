@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 from os import path
 from gym.core import Env
 from gym.spaces import Text, Box, Dict, Sequence
@@ -12,6 +11,7 @@ import time
 import numpy as np
 
 
+# NOTE: When we update from nixos-23.05, we will need to make sure this properly conforms with PettingZoo's ParallelEnv.
 class MultiagentZombsoleEnv(object):
     """The main class for multiagent play.
     """
@@ -19,6 +19,7 @@ class MultiagentZombsoleEnv(object):
     metadata = {
         'render.modes': ['human']
     }
+    # reward_range doesn't appear to be mentioned in the ParallelEnv API, but we keep it anyway
     reward_range = (-float('inf'), float('inf'))
     
     # action_space = Sequence( # alternate approach; this might be the way to go
@@ -110,20 +111,21 @@ class MultiagentZombsoleEnv(object):
        }
 
     def step(self, action):
-        """Run one timestep of the environment's dynamics. When end of
-        episode is reached, you are responsible for calling `reset()`
-        to reset this environment's state.
+        """
+        Receives a dictionary of actions keyed by the agent name.
 
-        Accepts an action and returns a tuple (observation, reward, done, info).
+        Returns the observation dictionary, reward dictionary, terminated dictionary, truncated dictionary and info dictionary,
+        where each dictionary is keyed by the agent.
 
         Args:
-            action (object): an action provided by the agent
+            actions (dict): A dictionary of actions with agent IDs as keys
 
         Returns:
-            observation (object): agent's observation of the current environment
-            reward (float) : amount of reward returned after previous action
-            done (bool): whether the episode has ended, in which case further step() calls will return undefined results
-            info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+            observation (dict): observations of the current environment for each agent ID
+            reward (dict[AgentID, float]) : amount of reward returned after previous action for each agent ID
+            done (dict[AgentID, bool]): whether the episode has ended for each agent ID, in which case subsequent steps() calls might not return info for such an agent
+            truncated (dict[AgentID, bool]): whether the episode has expired without a clear outcome for each agent ID, in which case further step() calls will return undefined results for that agent ID
+            info (dict[AgentID, dict]): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning) for each agent ID
         """
         agent_actions = self._process_action(action)
         for agent in self.game.agents:
@@ -179,14 +181,9 @@ class MultiagentZombsoleEnv(object):
         """Resets the environment to an initial state and returns an initial
         observation.
 
-        Note that this function should not reset the environment's random
-        number generator(s); random variables in the environment's state should
-        be sampled independently between multiple calls to `reset()`. In other
-        words, each call of `reset()` should yield an environment suitable for
-        a new episode, independent of previous episodes.
-
         Returns:
-            observation (object): the initial observation.
+            dictionary of observations (dict[AgentID, ObsType]): the initial observations
+            dictionary of info (dict[AgentID, dict]): additional information for each agent
         """
         self.game.__initialize_world__()
         self.reward_tracker.reset(self.game.agents, self.game.world)
@@ -230,14 +227,14 @@ class MultiagentZombsoleEnv(object):
     #     # NOTE: Not currently capturing the seed information used in zombsole
     #     return
 
-    @property
-    def unwrapped(self):
-        """Completely unwrap this env.
+    # @property
+    # def unwrapped(self):
+    #     """Completely unwrap this env.
 
-        Returns:
-            gym.Env: The base non-wrapped gym.Env instance
-        """
-        return self
+    #     Returns:
+    #         gym.Env: The base non-wrapped gym.Env instance
+    #     """
+    #     return self
 
     def __str__(self):
         return '<{} instance>'.format(type(self).__name__)
