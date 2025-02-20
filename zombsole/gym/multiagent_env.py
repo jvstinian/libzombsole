@@ -4,7 +4,7 @@ from gym.core import Env
 from gym.spaces import Text, Box, Dict, Sequence
 from gym.spaces.discrete import Discrete
 from zombsole.gym.observation import SurroundingsChannelsObservation
-from zombsole.gym.reward import MultiAgentRewards # , AgentRewards
+from zombsole.gym.reward import MultiAgentRewards
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
 import time
@@ -22,24 +22,6 @@ class MultiagentZombsoleEnv(object):
     # reward_range doesn't appear to be mentioned in the ParallelEnv API, but we keep it anyway
     reward_range = (-float('inf'), float('inf'))
     
-    # action_space = Sequence( # alternate approach; this might be the way to go
-    #     Dict({
-    #         "agent_id": Discrete(64), # TODO
-    #         "action_type": Text(15), 
-    #         "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
-    #     })
-    # )
-
-    # # setting observation_space in the constructor with the help of the following
-    # def _get_observation_space(self, width):
-    #     return Sequence(
-    #         Dict({
-    #             "agent_id": Discrete(64), # TODO
-    #             "observation": Box(low=0, high=128, shape=(3, width, width), dtype=np.int32)
-    #         })
-    #     )
-
-
     def __init__(self, rules_name, player_names, map_name, agent_ids, initial_zombies=0,
                  minimum_zombies=0, renderer=NoRender(), 
                  observation_surroundings_width=21,
@@ -52,12 +34,12 @@ class MultiagentZombsoleEnv(object):
         self.possible_agents = agent_ids
         # self.num_agents = len(self.agents) # Is this needed by PettingZoo?
         # self.max_num_agents = len(self.possible_agents) # Is this needed by PettingZoo?
-        self.action_spaces = { 
+        self.action_spaces = {
             agent_id: Dict({
                 "action_type": Text(15), 
                 "parameter": Box(low=-10, high=10, shape=(2,), dtype=np.int32)
             })
-            for agent_id in self.possible_agents 
+            for agent_id in self.possible_agents
         }
         self.observation_spaces = {
             agent_id: self.single_agent_observation.get_observation_space()
@@ -84,8 +66,9 @@ class MultiagentZombsoleEnv(object):
             self.game.agents,
             self.game.world,
             10.0,
-            # include_life_in_reward=True
         )
+        
+        self.frames_per_second=None
 
     def get_observation(self):
         ret = {}
@@ -132,18 +115,15 @@ class MultiagentZombsoleEnv(object):
             agent_action = agent_actions.get(agent.agent_id, {"action_type": "heal", "parameter": [0, 0]})
             agent.set_action(agent_action)
 
-        frames_per_second=None # TODO: Move to constructor
-
         self.game.world.step()
         
-        # TODO: What should be done with the following?
         rewardslist = self.reward_tracker.update(self.game.agents, self.game.world)
 
         # maintain the flow of zombies if necessary
         self.game.spawn_zombies_to_maintain_minimum()
 
-        if frames_per_second is not None:
-            time.sleep(1.0 / frames_per_second)
+        if self.frames_per_second is not None:
+            time.sleep(1.0 / self.frames_per_second)
 
         doneflag = False
         truncatedflag = False
@@ -152,12 +132,10 @@ class MultiagentZombsoleEnv(object):
             won, description = self.game.rules.game_won()
             doneflag = True
             end_reward = self.reward_tracker.get_game_end_reward(won)
-            # reward += end_reward
         elif not self.game.rules.agents_alive():
             # Using truncated to indicate the agents are no longer alive
             truncatedflag = True
             end_reward = self.reward_tracker.get_game_end_reward(False)
-            # reward += end_reward
         
         # form returns
         rewards = {}
@@ -176,7 +154,6 @@ class MultiagentZombsoleEnv(object):
 
         return observations, rewards, done, truncated, info
 
-
     def reset(self, seed=None, options=None):
         """Resets the environment to an initial state and returns an initial
         observation.
@@ -185,9 +162,9 @@ class MultiagentZombsoleEnv(object):
             dictionary of observations (dict[AgentID, ObsType]): the initial observations
             dictionary of info (dict[AgentID, dict]): additional information for each agent
         """
+        self.agents = self.possible_agents
         self.game.__initialize_world__()
         self.reward_tracker.reset(self.game.agents, self.game.world)
-        self.agents = self.possible_agents
         return self.get_observation()
 
     def render(self, mode='human'):
@@ -208,33 +185,6 @@ class MultiagentZombsoleEnv(object):
         garbage collected or when the program exits.
         """
         pass
-
-    # def seed(self, seed=None):
-    #     """Sets the seed for this env's random number generator(s).
-
-    #     Note:
-    #         Some environments use multiple pseudorandom number generators.
-    #         We want to capture all such seeds used in order to ensure that
-    #         there aren't accidental correlations between multiple generators.
-
-    #     Returns:
-    #         list<bigint>: Returns the list of seeds used in this env's random
-    #           number generators. The first value in the list should be the
-    #           "main" seed, or the value which a reproducer should pass to
-    #           'seed'. Often, the main seed equals the provided 'seed', but
-    #           this won't be true if seed=None, for example.
-    #     """
-    #     # NOTE: Not currently capturing the seed information used in zombsole
-    #     return
-
-    # @property
-    # def unwrapped(self):
-    #     """Completely unwrap this env.
-
-    #     Returns:
-    #         gym.Env: The base non-wrapped gym.Env instance
-    #     """
-    #     return self
 
     def __str__(self):
         return '<{} instance>'.format(type(self).__name__)
