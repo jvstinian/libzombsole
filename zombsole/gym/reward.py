@@ -69,7 +69,6 @@ class MultiAgentRewards(MultiAgentRewardsInterface):
         self.agents_life = [agent.life for agent in agents]
         self.zombie_deaths = 0
         self.game_end_value = game_end_value
-        # self.include_life_in_reward = include_life_in_reward
     
     def reset(self, agents, world):
         self.agents_life = [agent.life for agent in agents]
