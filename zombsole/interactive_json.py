@@ -281,7 +281,6 @@ class GymEnvManager(GameManagementInterface):
         if self.use_multiagent_env:
             ret = {}
             # Go through the observation records, and convert numpy arrays to python lists
-            # TODO: This probably needs to be updated
             for agent_id in observation:
                 ret[agent_id] = observation[agent_id].tolist()
             return ret
@@ -306,7 +305,6 @@ class GymEnvManager(GameManagementInterface):
         origobs, _ = self.gym_env.reset()
         observation = self._observation_json_ready(origobs)
         reward, done, truncated, info = self._initial_values(observation.keys())
-        # TODO: The following doesn't work for multi-agent anymore
         self.last_observation = {
             "observation": observation,
             "reward": reward,
