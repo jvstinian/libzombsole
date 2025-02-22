@@ -79,7 +79,7 @@ class MultiagentZombsoleEnv(object):
                     agent.position
                 )
         # return the observation and info
-        return ret, {}
+        return ret
 
     def _process_single_agent_action(self, sp_action):
         coords = sp_action.get("parameter", [0, 0])
@@ -145,7 +145,8 @@ class MultiagentZombsoleEnv(object):
                     rewards[agent.agent_id] = reward + end_reward
                 else:
                     rewards[agent.agent_id] = reward
-        observations, info = self.get_observation()
+        observations = self.get_observation()
+        info = {}
         done = { agent_id: doneflag for agent_id in self.agents }
         truncated = { agent_id: truncatedflag for agent_id in self.agents }
 
@@ -165,7 +166,7 @@ class MultiagentZombsoleEnv(object):
         self.agents = self.possible_agents
         self.game.__initialize_world__()
         self.reward_tracker.reset(self.game.agents, self.game.world)
-        return self.get_observation()
+        return self.get_observation(), {}
 
     def render(self, mode='human'):
         """Renders the environment.  Only 'human' is supported in this implementation.

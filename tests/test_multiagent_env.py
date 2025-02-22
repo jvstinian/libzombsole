@@ -64,7 +64,7 @@ def test_multiagent_env_shape():
          observation_surroundings_width=21, 
         debug=True
     )
-    observation, _ = env.get_observation()
+    observation = env.get_observation()
     map_size = env.game.world.size
     channels = 3
     expected_observation_shape = (channels, max(map_size[1], 21), max(map_size[0], 21))
