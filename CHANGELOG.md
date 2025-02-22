@@ -1,3 +1,7 @@
+# 0.11.1
+
+Adapting the multi-agent environment to the PettingZoo parallel environment interface.
+
 # 0.11.0
 
 Adjusting the reset method in gym implementations to return both an initial observation and an info dictionary.
