@@ -1,6 +1,6 @@
 # tests/test_multiagent_env.py
 import pytest
-from zombsole.gym.multiagent_env import MultiagentZombsoleEnv
+from zombsole.gym.multiagent_env import MultiagentZombsoleEnv, MultiagentZombsoleEnvDiscreteAction
 from zombsole.renderer import NoRender
 
 
@@ -52,6 +52,22 @@ def env32p_fixture():
     return env
 
 
+@pytest.fixture(scope="function", name="env4p_discrete")
+def env4p_discrete_fixture():
+    env = MultiagentZombsoleEnvDiscreteAction(
+        "extermination",
+        [],
+        "fort",
+        list([str(i) for i in range(0, 4)]), # agent_ids
+        initial_zombies=100,
+        minimum_zombies=0, 
+        renderer=NoRender(), 
+        observation_surroundings_width=21,
+        debug=True
+    )
+    return env
+
+
 def test_multiagent_env_shape():
     env = MultiagentZombsoleEnv(
         "extermination",
@@ -82,7 +98,7 @@ def test_multiagent_1pgame(env1p):
             }
         })
 
-        if done or truncated or (stepcount >=10):
+        if all(done.values()) or all(truncated.values()) or (stepcount >=10):
             break
 
         stepcount += 1
@@ -115,7 +131,25 @@ def test_multiagent_large_game(env32p):
             } for idx in range(0, 32)
         })
 
-        if done or truncated or (stepcount >=200):
+        if all(done.values()) or all(truncated.values()) or (stepcount >=200):
+            break
+
+        stepcount += 1
+
+    assert True
+
+def test_multiagent_discrete_action_game(env4p_discrete):
+    stepcount = 0
+    agent_ids = env4p_discrete.env.possible_agents
+    while True:
+        obs, _, done, truncated, _ = env4p_discrete.step({
+            agent_id: env4p_discrete.action_spaces[agent_id].sample()
+            for agent_id in agent_ids
+        })
+
+        agents_ids = [agent_id for agent_id in obs]
+
+        if all(done.values()) or all(truncated.values()) or (stepcount >=200):
             break
 
         stepcount += 1
