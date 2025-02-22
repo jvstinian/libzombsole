@@ -42,7 +42,7 @@ def env32p_fixture():
         "extermination",
         [],
         "fort",
-        list(range(0, 32)), # agent_ids
+        list(map(str, range(0, 32))), # agent_ids
         initial_zombies=100,
         minimum_zombies=0, 
         renderer=NoRender(), 
@@ -58,7 +58,7 @@ def env4p_discrete_fixture():
         "extermination",
         [],
         "fort",
-        list([str(i) for i in range(0, 4)]), # agent_ids
+        [str(i) for i in range(0, 4)], # agent_ids
         initial_zombies=100,
         minimum_zombies=0, 
         renderer=NoRender(), 
@@ -147,7 +147,10 @@ def test_multiagent_discrete_action_game(env4p_discrete):
             for agent_id in agent_ids
         })
 
+        print("done: ", done)
+
         agents_ids = [agent_id for agent_id in obs]
+        print("agent_ids: ", agent_ids)
 
         if all(done.values()) or all(truncated.values()) or (stepcount >=200):
             break
