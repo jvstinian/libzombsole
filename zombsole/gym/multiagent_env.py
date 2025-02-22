@@ -199,3 +199,108 @@ class MultiagentZombsoleEnv(object):
         # propagate exception
         return False
 
+# Note: At this time, we don't specify a base class
+class MultiAgentWrapper(object):
+    """Wraps the environment to allow a modular transformation.
+
+    This class is the base class for all wrappers. The subclass could override
+    some methods to change the behavior of the original environment without touching the
+    original code.
+
+    .. note::
+
+        Don't forget to call ``super().__init__(env)`` if the subclass overrides :meth:`__init__`.
+
+    """
+    def __init__(self, env):
+        self.env = env
+        self.action_spaces = self.env.action_spaces
+        self.observation_spaces = self.env.observation_spaces
+        self.reward_range = self.env.reward_range
+        self.metadata = self.env.metadata
+
+    @classmethod
+    def class_name(cls):
+        return cls.__name__
+
+    def step(self, action):
+        return self.env.step(action)
+
+    def reset(self, seed=None, options=None):
+        return self.env.reset(seed=seed, options=options)
+
+    def render(self, mode='human'):
+        return self.env.render(mode)
+
+    def close(self):
+        self.env.close()
+
+    def __str__(self):
+        return '<{}{}>'.format(type(self).__name__, self.env)
+
+class MultiagentZombsoleEnvDiscreteAction(MultiAgentWrapper):
+    game_actions = [
+        { 
+            'action_type': 'move',
+            'parameter': [0, 1]
+        },
+        { 
+            'action_type': 'move',
+            'parameter': [-1, 0]
+        },
+        { 
+            'action_type': 'move',
+            'parameter': [0, -1]
+        },
+        { 
+            'action_type': 'move',
+            'parameter': [1, 0]
+        },
+        {
+            'action_type': 'attack_closest'
+        },
+        {
+            'action_type': 'heal'
+        },
+        {
+            'action_type': 'heal_closest'
+        }
+    ]
+
+    def __init__(self, rules_name, player_names, map_name, agent_ids, 
+                 initial_zombies=0, minimum_zombies=0, 
+                 renderer=NoRender(), 
+                 observation_surroundings_width=21,
+                 agent_weapons="rifle",
+                 debug=False):
+        env = MultiagentZombsoleEnv(
+            rules_name, player_names, map_name, agent_ids, 
+            initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
+            renderer=renderer,
+            observation_surroundings_width=observation_surroundings_width,
+            agent_weapons=agent_weapons,
+            debug=debug
+        )
+        super().__init__(env)
+        # We override the action_space here
+        self.action_spaces = {
+            agent_id: Discrete(len(MultiagentZombsoleEnvDiscreteAction.game_actions))
+            for agent_id in self.env.possible_agents
+        }
+
+    def step(self, actions):
+        return super().step(self.actions(actions))
+
+    # def action(self, action):
+    #     return self.game_actions[action]
+
+    def actions(self, actions):
+        return {
+            agent_id: self.game_actions[action] for agent_id, action in actions.items()
+        }
+
+    def reverse_actions(self, actions):
+        return {
+            agent_id: self.game_actions.index(action) for agent_id, action in actions
+        }
+
