@@ -146,11 +146,7 @@ def test_multiagent_discrete_action_game(env4p_discrete):
             agent_id: env4p_discrete.action_spaces[agent_id].sample()
             for agent_id in agent_ids
         })
-
-        print("done: ", done)
-
         agents_ids = [agent_id for agent_id in obs]
-        print("agent_ids: ", agent_ids)
 
         if all(done.values()) or all(truncated.values()) or (stepcount >=200):
             break

@@ -291,9 +291,6 @@ class MultiagentZombsoleEnvDiscreteAction(MultiAgentWrapper):
     def step(self, actions):
         return super().step(self.actions(actions))
 
-    # def action(self, action):
-    #     return self.game_actions[action]
-
     def actions(self, actions):
         return {
             agent_id: self.game_actions[action] for agent_id, action in actions.items()
@@ -301,6 +298,6 @@ class MultiagentZombsoleEnvDiscreteAction(MultiAgentWrapper):
 
     def reverse_actions(self, actions):
         return {
-            agent_id: self.game_actions.index(action) for agent_id, action in actions
+            agent_id: self.game_actions.index(action) for agent_id, action in actions.items()
         }
 
