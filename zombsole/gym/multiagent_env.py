@@ -3,7 +3,7 @@ from os import path
 from gym.core import Env
 from gym.spaces import Text, Box, Dict, Sequence
 from gym.spaces.discrete import Discrete
-from zombsole.gym.observation import SurroundingsChannelsObservation
+from zombsole.gym.observation import build_surroundings_observation # , SurroundingsChannelsObservation
 from zombsole.gym.reward import MultiAgentRewards
 from zombsole.game import Game, Map
 from zombsole.renderer import NoRender
@@ -25,10 +25,13 @@ class MultiagentZombsoleEnv(object):
     def __init__(self, rules_name, player_names, map_name, agent_ids, initial_zombies=0,
                  minimum_zombies=0, renderer=NoRender(), 
                  observation_surroundings_width=21,
+                 observation_position_encoding_style="channels",
                  agent_weapons="rifle",
                  debug=False):
+        self.position_encoding_style = observation_position_encoding_style
         self.surroundings_width = observation_surroundings_width
-        self.single_agent_observation = SurroundingsChannelsObservation(self.surroundings_width)
+        # self.single_agent_observation = SurroundingsChannelsObservation(self.surroundings_width)
+        self.single_agent_observation = build_surroundings_observation(self.surroundings_width, self.position_encoding_style)
 
         self.agents = agent_ids
         self.possible_agents = agent_ids

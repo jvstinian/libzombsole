@@ -202,3 +202,16 @@ def build_observation(scope: str, position_encoding_style: str, map_size: Tuple[
         else:
             return SurroundingsChannelsObservation(surroundings_width)
 
+def build_surroundings_observation(surroundings_width: int, position_encoding_style: str) -> SinglePlayerObservation:
+    if (surroundings_width % 2 == 0) or (surroundings_width <= 1):
+        raise ValueError("surroundings width must be an odd number greater than 1")
+    
+    lpes = position_encoding_style.lower()
+    if not (lpes in ["simple", "channels"]):
+        raise ValueError(f"{lpes} must be \"simple\" or \"channels\"")
+
+    if lpes == "simple":
+        return SurroundingsSimpleObservation(surroundings_width)
+    else:
+        return SurroundingsChannelsObservation(surroundings_width)
+
