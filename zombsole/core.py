@@ -161,7 +161,7 @@ class World(object):
 
                 event = u'moved to ' + str(destination)
         else:
-                event = u'Tried to move out of bounds to (%s, %s)' % destination
+                event = u'Tried to move out of bounds to %s' % str(destination)
 
         return event
 
