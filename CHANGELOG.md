@@ -1,6 +1,7 @@
 # 0.11.1
 
 Adapting the multi-agent environment to the PettingZoo parallel environment interface.
+Adding a wrapper to the multi-agent environment to support discrete actions.
 
 # 0.11.0
 
