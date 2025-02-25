@@ -1,3 +1,12 @@
+# 0.11.2
+
+Adding support to the multi-agent environment for using the simple observation style in addition to the channels observation style.
+
+# 0.11.1
+
+Adapting the multi-agent environment to the PettingZoo parallel environment interface.
+Wrapping the multi-agent environment to create a new multi-agent environment using discrete actions.
+
 # 0.11.0
 
 Adjusting the reset method in gym implementations to return both an initial observation and an info dictionary.
