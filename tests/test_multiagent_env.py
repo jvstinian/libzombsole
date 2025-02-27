@@ -1,7 +1,6 @@
 # tests/test_multiagent_env.py
 import pytest
 from zombsole.gym.multiagent_env import MultiagentZombsoleEnv, MultiagentZombsoleEnvDiscreteAction
-from zombsole.renderer import NoRender
 
 
 @pytest.fixture(scope="function", name="env1p")
@@ -13,7 +12,7 @@ def env1p_fixture():
         ["0"], # agent_ids
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_surroundings_width=21, 
         debug=True
     )
@@ -29,7 +28,7 @@ def env2p_fixture():
         ["0", "1"], # agent_ids
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_surroundings_width=21, 
         debug=True
     )
@@ -45,7 +44,7 @@ def env32p_fixture():
         list(map(str, range(0, 32))), # agent_ids
         initial_zombies=100,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_surroundings_width=21, 
         debug=True
     )
@@ -61,7 +60,7 @@ def env4p_discrete_fixture():
         [str(i) for i in range(0, 4)], # agent_ids
         initial_zombies=100,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_surroundings_width=21,
         debug=True
     )
@@ -76,7 +75,7 @@ def test_multiagent_env_shape():
         [0], # agent_ids
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
          observation_surroundings_width=21, 
         debug=True
     )

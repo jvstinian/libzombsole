@@ -2,7 +2,6 @@
 import pytest
 from gym.spaces.discrete import Discrete
 from zombsole.gym_env import ZombsoleGymEnv, ZombsoleGymEnvDiscreteAction
-from zombsole.renderer import NoRender
 from zombsole.things import Zombie
 
 
@@ -15,7 +14,7 @@ def test_game_targeted_attack():
         0, # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope="world",
         observation_position_encoding="simple",
         debug=True
@@ -47,7 +46,7 @@ def test_game_targeted_heal():
         0, # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope="world",
         observation_position_encoding="simple",
         debug=True
@@ -74,7 +73,7 @@ def test_game_heal_closest():
         0, # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope="world",
         observation_position_encoding="simple",
         debug=True
@@ -97,7 +96,7 @@ def test_game_heal_self():
         0, # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope="world",
         observation_position_encoding="simple",
         debug=True
@@ -120,7 +119,7 @@ def test_discrete_game_closest_attack():
         0, # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope="world",
         observation_position_encoding="simple",
         debug=True

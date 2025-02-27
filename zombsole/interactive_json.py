@@ -193,17 +193,24 @@ class GameActionRequest(object):
         game_manager.step_with_agent_action(self.action)
 
 class GymEnvManager(GameManagementInterface):
-    def __init__(self, renderer: GameRenderer, use_multiagent_env: bool):
+    def __init__(self, render_mode: str, use_multiagent_env: bool):
         self.game_config = None
         self.gym_env = None
         self.keep_going = True
         self.last_observation = None
         self.response_encoder = GameStateEncoder(indent=None)
-        self.renderer = renderer
+        self.render_mode = render_mode
         self.use_multiagent_env = use_multiagent_env
 
     def _initialize_gym(self):
         if self.game_config is not None:
+            # renderer = build_renderer(
+            #         self.renderer_id,
+            #         False,
+            #         (120, 40),
+            #         len(self.game_config.players) + len(self.game_config.agent_ids), # assume only a single agent
+            #         debug=False
+            # )
             if self.use_multiagent_env:
                 scope = self.game_config.observation_scope
                 swidth = int(scope[len("surroundings:"):]) if scope.startswith("surroundings:") else 21
@@ -216,7 +223,8 @@ class GymEnvManager(GameManagementInterface):
                     initial_zombies=self.game_config.initial_zombies, 
                     minimum_zombies=self.game_config.minimum_zombies,
                     observation_surroundings_width=swidth,
-                    renderer=self.renderer,
+                    # renderer=renderer,
+                    render_mode=self.render_mode,
                     debug=False
                 )
             else: # single agent
@@ -229,7 +237,8 @@ class GymEnvManager(GameManagementInterface):
                     minimum_zombies=self.game_config.minimum_zombies,
                     observation_scope=self.game_config.observation_scope,
                     observation_position_encoding=self.game_config.observation_position_encoding,
-                    renderer=self.renderer,
+                    # renderer=renderer,
+                    render_mode=self.render_mode,
                     debug=False
                 )
             self.last_observation = None
@@ -349,16 +358,19 @@ def play_interactive_json():
     if renderer_id not in ["opencv", "none"]:
         print("When using interactive JSON mode, renderer_id must be one of \"opencv\" or \"none\".  Exiting...", file=sys.stderr)
         sys.exit(1)
-    renderer = build_renderer(
-            renderer_id,
-            False,
-            (120, 40),
-            1, # assume only a single agent
-            debug=False
-    )
+    render_mode = None
+    if renderer_id == "opencv":
+        render_mode = "human"
+    # renderer = build_renderer(
+    #         renderer_id,
+    #         False,
+    #         (120, 40),
+    #         1, # assume only a single agent
+    #         debug=False
+    # )
     multiagent_flag = arguments["--multi-agent"]
 
-    game_manager = GymEnvManager(renderer, multiagent_flag)
+    game_manager = GymEnvManager(render_mode, multiagent_flag)
     game_manager.run()
 
 if __name__ == '__main__':
