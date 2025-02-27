@@ -1,3 +1,8 @@
+# 0.11.3
+
+Reconfiguring the gym and multiagent environment constructors to take a render mode rather than a renderer as an argument.
+The Game class still takes the renderer as an argument.
+
 # 0.11.2
 
 Adding support to the multi-agent environment for using the simple observation style in addition to the channels observation style.
