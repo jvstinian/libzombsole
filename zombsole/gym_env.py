@@ -8,7 +8,7 @@ from gym.envs.registration import register
 from zombsole.gym.observation import build_observation
 from zombsole.gym.reward import AgentRewards
 from zombsole.game import Game, Map
-from zombsole.renderer import NoRender
+from zombsole.renderer import build_renderer
 import time
 import numpy as np
 

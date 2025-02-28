@@ -287,8 +287,9 @@ class GymEnvManager(GameManagementInterface):
         else: # single-agent
             return observation.tolist()
     
-    def _initial_values(self, agent_ids):
+    def _initial_values(self):
         if self.use_multiagent_env:
+            agent_ids = self.gym_env.possible_agents
             reward = {agent_id: 0 for agent_id in agent_ids}
             done = {agent_id: False for agent_id in agent_ids}
             truncated = {agent_id: False for agent_id in agent_ids}
@@ -304,7 +305,7 @@ class GymEnvManager(GameManagementInterface):
     def start_game(self):
         origobs, _ = self.gym_env.reset()
         observation = self._observation_json_ready(origobs)
-        reward, done, truncated, info = self._initial_values(observation.keys())
+        reward, done, truncated, info = self._initial_values()
         self.last_observation = {
             "observation": observation,
             "reward": reward,
