@@ -68,6 +68,7 @@
           buildInputs = with pkgs; [
             dev-python
           ];
+          shellHook = "export PS1='\\[\\e[1;34m\\]zombsole-dev > \\[\\e[0m\\]'";
         };
         packages = {
           zombsole = pkgs.python3Packages.jvstinian-zombsole;
