@@ -193,13 +193,13 @@ class GameActionRequest(object):
         game_manager.step_with_agent_action(self.action)
 
 class GymEnvManager(GameManagementInterface):
-    def __init__(self, renderer: GameRenderer, use_multiagent_env: bool):
+    def __init__(self, render_mode: str, use_multiagent_env: bool):
         self.game_config = None
         self.gym_env = None
         self.keep_going = True
         self.last_observation = None
         self.response_encoder = GameStateEncoder(indent=None)
-        self.renderer = renderer
+        self.render_mode = render_mode
         self.use_multiagent_env = use_multiagent_env
 
     def _initialize_gym(self):
@@ -216,7 +216,7 @@ class GymEnvManager(GameManagementInterface):
                     initial_zombies=self.game_config.initial_zombies, 
                     minimum_zombies=self.game_config.minimum_zombies,
                     observation_surroundings_width=swidth,
-                    renderer=self.renderer,
+                    render_mode=self.render_mode,
                     debug=False
                 )
             else: # single agent
@@ -229,7 +229,7 @@ class GymEnvManager(GameManagementInterface):
                     minimum_zombies=self.game_config.minimum_zombies,
                     observation_scope=self.game_config.observation_scope,
                     observation_position_encoding=self.game_config.observation_position_encoding,
-                    renderer=self.renderer,
+                    render_mode=self.render_mode,
                     debug=False
                 )
             self.last_observation = None
@@ -287,8 +287,9 @@ class GymEnvManager(GameManagementInterface):
         else: # single-agent
             return observation.tolist()
     
-    def _initial_values(self, agent_ids):
+    def _initial_values(self):
         if self.use_multiagent_env:
+            agent_ids = self.gym_env.possible_agents
             reward = {agent_id: 0 for agent_id in agent_ids}
             done = {agent_id: False for agent_id in agent_ids}
             truncated = {agent_id: False for agent_id in agent_ids}
@@ -304,7 +305,7 @@ class GymEnvManager(GameManagementInterface):
     def start_game(self):
         origobs, _ = self.gym_env.reset()
         observation = self._observation_json_ready(origobs)
-        reward, done, truncated, info = self._initial_values(observation.keys())
+        reward, done, truncated, info = self._initial_values()
         self.last_observation = {
             "observation": observation,
             "reward": reward,
@@ -349,16 +350,12 @@ def play_interactive_json():
     if renderer_id not in ["opencv", "none"]:
         print("When using interactive JSON mode, renderer_id must be one of \"opencv\" or \"none\".  Exiting...", file=sys.stderr)
         sys.exit(1)
-    renderer = build_renderer(
-            renderer_id,
-            False,
-            (120, 40),
-            1, # assume only a single agent
-            debug=False
-    )
+    render_mode = None
+    if renderer_id == "opencv":
+        render_mode = "human"
     multiagent_flag = arguments["--multi-agent"]
 
-    game_manager = GymEnvManager(renderer, multiagent_flag)
+    game_manager = GymEnvManager(render_mode, multiagent_flag)
     game_manager.run()
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ from gymnasium.spaces.discrete import Discrete
 from zombsole.gym.observation import build_surroundings_observation
 from zombsole.gym.reward import MultiAgentRewards
 from zombsole.game import Game, Map
-from zombsole.renderer import NoRender
+from zombsole.renderer import build_renderer
 import time
 import numpy as np
 
@@ -23,7 +23,7 @@ class MultiagentZombsoleEnv(object):
     reward_range = (-float('inf'), float('inf'))
     
     def __init__(self, rules_name, player_names, map_name, agent_ids, initial_zombies=0,
-                 minimum_zombies=0, renderer=NoRender(), 
+                 minimum_zombies=0, render_mode=None,
                  observation_surroundings_width=21,
                  observation_position_encoding_style="channels",
                  agent_weapons="rifle",
@@ -53,6 +53,10 @@ class MultiagentZombsoleEnv(object):
         map_file = path.join(fdir, '..', 'maps', map_name)
         map_ = Map.from_file(map_file)
 
+        if render_mode is not None and (render_mode not in self.metadata['render.modes']):
+            raise ValueError("render_mode={} is not supported".format(render_mode))
+        renderer = self.__build_renderer(render_mode, map_.size, len(player_names), len(agent_ids))
+
         # game
         self.game = Game(
             rules_name, player_names, map_,
@@ -71,6 +75,14 @@ class MultiagentZombsoleEnv(object):
         )
         
         self.frames_per_second=None
+
+    def __build_renderer(self, render_mode, map_size, num_players, num_agents):
+        renderer = None
+        if render_mode == "human":
+            renderer = build_renderer(
+                "opencv", False, map_size, num_players + num_agents
+            )
+        return renderer
 
     def get_observation(self):
         ret = {}
@@ -272,14 +284,14 @@ class MultiagentZombsoleEnvDiscreteAction(MultiAgentWrapper):
 
     def __init__(self, rules_name, player_names, map_name, agent_ids, 
                  initial_zombies=0, minimum_zombies=0, 
-                 renderer=NoRender(), 
+                 render_mode=None,
                  observation_surroundings_width=21,
                  agent_weapons="rifle",
                  debug=False):
         env = MultiagentZombsoleEnv(
             rules_name, player_names, map_name, agent_ids, 
             initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
-            renderer=renderer,
+            render_mode=render_mode,
             observation_surroundings_width=observation_surroundings_width,
             agent_weapons=agent_weapons,
             debug=debug

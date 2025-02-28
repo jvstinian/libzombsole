@@ -8,7 +8,7 @@ from gymnasium.envs.registration import register
 from zombsole.gym.observation import build_observation
 from zombsole.gym.reward import AgentRewards
 from zombsole.game import Game, Map
-from zombsole.renderer import NoRender
+from zombsole.renderer import build_renderer
 import time
 import numpy as np
 
@@ -47,13 +47,17 @@ class ZombsoleGymEnv(object):
     # setting observation_space in the constructor
 
     def __init__(self, rules_name, player_names, map_name, agent_id, initial_zombies=0,
-                 minimum_zombies=0, renderer=NoRender(), 
+                 minimum_zombies=0, render_mode=None,
                  observation_scope="world", observation_position_encoding="simple", 
                  agent_weapon="rifle",
                  debug=False):
         fdir = path.dirname(path.abspath(__file__))
         map_file = path.join(fdir, 'maps', map_name)
         map_ = Map.from_file(map_file)
+        
+        if render_mode is not None and (render_mode not in self.metadata['render.modes']):
+            raise ValueError("render_mode={} is not supported".format(render_mode))
+        renderer = self.__build_renderer(render_mode, map_.size, len(player_names))
 
         self.game = Game(
             rules_name, player_names, map_,
@@ -76,6 +80,14 @@ class ZombsoleGymEnv(object):
             10.0,
             include_life_in_reward=True
         )
+
+    def __build_renderer(self, render_mode, map_size, num_players):
+        renderer = None
+        if render_mode == "human":
+            renderer = build_renderer(
+                "opencv", False, map_size, num_players + 1
+            )
+        return renderer
 
     def get_observation(self):
         return self.observation_handler.get_observation(self.game)
@@ -360,13 +372,13 @@ class ZombsoleGymEnvDiscreteAction(Wrapper):
     
     def __init__(self, rules_name, player_names, map_name, agent_id, 
                  initial_zombies=0, minimum_zombies=0, 
-                 renderer=NoRender(), 
+                 render_mode=None,
                  observation_scope="world", observation_position_encoding="simple", 
                  debug=False):
         env = ZombsoleGymEnv(
             rules_name, player_names, map_name, agent_id, 
             initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
-            renderer=renderer,
+            render_mode=render_mode,
             observation_scope=observation_scope, observation_position_encoding=observation_position_encoding,
             debug=debug
         )
