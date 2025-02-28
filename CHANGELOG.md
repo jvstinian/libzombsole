@@ -1,4 +1,4 @@
-# 0.11.3
+# 0.12.0
 
 Reconfiguring the gym and multiagent environment constructors to take a render mode rather than a renderer as an argument.
 The Game class still takes the renderer as an argument.

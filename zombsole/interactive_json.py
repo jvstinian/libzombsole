@@ -204,13 +204,6 @@ class GymEnvManager(GameManagementInterface):
 
     def _initialize_gym(self):
         if self.game_config is not None:
-            # renderer = build_renderer(
-            #         self.renderer_id,
-            #         False,
-            #         (120, 40),
-            #         len(self.game_config.players) + len(self.game_config.agent_ids), # assume only a single agent
-            #         debug=False
-            # )
             if self.use_multiagent_env:
                 scope = self.game_config.observation_scope
                 swidth = int(scope[len("surroundings:"):]) if scope.startswith("surroundings:") else 21
@@ -223,7 +216,6 @@ class GymEnvManager(GameManagementInterface):
                     initial_zombies=self.game_config.initial_zombies, 
                     minimum_zombies=self.game_config.minimum_zombies,
                     observation_surroundings_width=swidth,
-                    # renderer=renderer,
                     render_mode=self.render_mode,
                     debug=False
                 )
@@ -237,7 +229,6 @@ class GymEnvManager(GameManagementInterface):
                     minimum_zombies=self.game_config.minimum_zombies,
                     observation_scope=self.game_config.observation_scope,
                     observation_position_encoding=self.game_config.observation_position_encoding,
-                    # renderer=renderer,
                     render_mode=self.render_mode,
                     debug=False
                 )
@@ -361,13 +352,6 @@ def play_interactive_json():
     render_mode = None
     if renderer_id == "opencv":
         render_mode = "human"
-    # renderer = build_renderer(
-    #         renderer_id,
-    #         False,
-    #         (120, 40),
-    #         1, # assume only a single agent
-    #         debug=False
-    # )
     multiagent_flag = arguments["--multi-agent"]
 
     game_manager = GymEnvManager(render_mode, multiagent_flag)
