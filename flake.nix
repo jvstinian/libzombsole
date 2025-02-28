@@ -20,7 +20,7 @@
                       # was previously using "dependencies" but the packages 
                       # didn't appear to propagate to the output package
                       propagatedBuildInputs = with python-final; [
-                        docopt termcolor pillow opencv4 gym
+                        docopt termcolor pillow opencv4 gymnasium
                       ];
     
                       doCheck = true;
@@ -59,7 +59,7 @@
               numpy
               pillow
               opencv4
-              gym
+              gymnasium
               jvstinian-zombsole
           ];
           dev-python = pkgs.python3.withPackages dev-python-packages;

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from os import path
-from gym.core import Env
-from gym.spaces import Text, Box, Dict, Sequence
-from gym.spaces.discrete import Discrete
+from gymnasium.core import Env
+from gymnasium.spaces import Text, Box, Dict, Sequence
+from gymnasium.spaces.discrete import Discrete
 from zombsole.gym.observation import build_surroundings_observation
 from zombsole.gym.reward import MultiAgentRewards
 from zombsole.game import Game, Map

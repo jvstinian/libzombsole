@@ -1,6 +1,6 @@
 # tests/test_game.py
 import pytest
-from gym.spaces.discrete import Discrete
+from gymnasium.spaces.discrete import Discrete
 from zombsole.gym_env import ZombsoleGymEnv, ZombsoleGymEnvDiscreteAction
 from zombsole.things import Zombie
 
