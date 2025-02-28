@@ -2,7 +2,6 @@
 import pytest
 import gymnasium
 from zombsole.gym_env import ZombsoleGymEnv
-from zombsole.renderer import NoRender
 
 
 def test_gym_env_registry():
@@ -18,7 +17,7 @@ def test_observations_world(scope, position_encoding):
         "0", # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope=scope,
         observation_position_encoding=position_encoding,
         debug=False
@@ -37,7 +36,7 @@ def test_observations_surroundings(scope, position_encoding):
         "0", # agent_id
         initial_zombies=1,
         minimum_zombies=0, 
-        renderer=NoRender(), 
+        render_mode=None,
         observation_scope=scope,
         observation_position_encoding=position_encoding,
         debug=False
