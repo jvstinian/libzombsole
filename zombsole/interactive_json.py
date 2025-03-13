@@ -329,7 +329,7 @@ class GymEnvManager(GameManagementInterface):
             "info": info
         }
 
-        self.gym_env.render(mode='human')
+        self.gym_env.render()
 
         self._resposne_to_stdout(
             GameObservationResponse(
