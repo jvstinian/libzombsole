@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 from os import path, system
-from gym.core import Env
-from gym.spaces import Text, Box, Dict
-from gym.spaces.discrete import Discrete
-from gym.envs.registration import register
+from gymnasium.core import Env
+from gymnasium.spaces import Text, Box, Dict
+from gymnasium.spaces.discrete import Discrete
+from gymnasium.envs.registration import register
 from zombsole.gym.observation import build_observation
 from zombsole.gym.reward import AgentRewards
 from zombsole.game import Game, Map
@@ -57,6 +57,7 @@ class ZombsoleGymEnv(object):
         
         if render_mode is not None and (render_mode not in self.metadata['render.modes']):
             raise ValueError("render_mode={} is not supported".format(render_mode))
+        self.render_mode = render_mode
         renderer = self.__build_renderer(render_mode, map_.size, len(player_names))
 
         self.game = Game(
@@ -161,7 +162,7 @@ class ZombsoleGymEnv(object):
         self.reward_tracker.reset(self.game.agents, self.game.world)
         return self.get_observation(), {}
 
-    def render(self, mode='human'):
+    def render(self):
         """Renders the environment.
 
         The set of supported modes varies per environment. (And some
@@ -198,9 +199,7 @@ class ZombsoleGymEnv(object):
                 else:
                     super(MyEnv, self).render(mode=mode) # just raise an exception
         """
-        # if mode == 'ansi':
-        #     return self.draw_world()
-        if mode == 'human':
+        if self.render_mode == 'human':
             self.game.draw()
             return None
         else:
@@ -276,6 +275,7 @@ class Wrapper(Env):
         self.observation_space = self.env.observation_space
         self.reward_range = self.env.reward_range
         self.metadata = self.env.metadata
+        self.render_mode = self.env.render_mode
 
     def __getattr__(self, name):
         if name.startswith('_'):
@@ -296,17 +296,14 @@ class Wrapper(Env):
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)
 
-    def render(self, mode='human', **kwargs):
-        return self.env.render(mode, **kwargs)
+    def render(self, **kwargs):
+        return self.env.render(**kwargs)
 
     def close(self):
         return self.env.close()
 
     def seed(self, seed=None):
         return self.env.seed(seed)
-
-    # def compute_reward(self, achieved_goal, desired_goal, info):
-    #     return self.env.compute_reward(achieved_goal, desired_goal, info)
 
     def __str__(self):
         return '<{}{}>'.format(type(self).__name__, self.env)

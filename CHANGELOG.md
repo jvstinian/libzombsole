@@ -1,3 +1,8 @@
+# 0.13.0
+
+Switching from gym to gymnasium.
+Updating the tracking of render mode in the environments to satisfy the gymnasium requirements.
+
 # 0.12.0
 
 Reconfiguring the gym and multiagent environment constructors to take a render mode rather than a renderer as an argument.
