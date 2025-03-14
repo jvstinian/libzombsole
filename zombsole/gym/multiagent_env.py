@@ -55,6 +55,7 @@ class MultiagentZombsoleEnv(object):
 
         if render_mode is not None and (render_mode not in self.metadata['render.modes']):
             raise ValueError("render_mode={} is not supported".format(render_mode))
+        self.render_mode = render_mode
         renderer = self.__build_renderer(render_mode, map_.size, len(player_names), len(agent_ids))
 
         # game
@@ -182,12 +183,12 @@ class MultiagentZombsoleEnv(object):
         self.reward_tracker.reset(self.game.agents, self.game.world)
         return self.get_observation(), {}
 
-    def render(self, mode='human'):
+    def render(self):
         """Renders the environment.  Only 'human' is supported in this implementation.
         Args:
             mode (str): the mode to render with
         """
-        if mode == 'human':
+        if self.render_mode == 'human':
             self.game.draw()
             return None
         else:
@@ -233,6 +234,7 @@ class MultiAgentWrapper(object):
         self.observation_spaces = self.env.observation_spaces
         self.reward_range = self.env.reward_range
         self.metadata = self.env.metadata
+        self.render_mode = self.env.render_mode
 
     @classmethod
     def class_name(cls):
@@ -244,7 +246,7 @@ class MultiAgentWrapper(object):
     def reset(self, seed=None, options=None):
         return self.env.reset(seed=seed, options=options)
 
-    def render(self, mode='human'):
+    def render(self):
         return self.env.render(mode)
 
     def close(self):
