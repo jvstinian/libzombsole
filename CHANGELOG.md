@@ -1,7 +1,7 @@
 # 0.13.0
 
 Switching from gym to gymnasium.
-Changing the environments to take the render mode rather than a rendering flag as a constructor argument.
+Updating the tracking of render mode in the environments to satisfy the gymnasium requirements.
 
 # 0.12.0
 
