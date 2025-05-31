@@ -59,7 +59,7 @@ class Zombie(FightingThing):
     ICON_BASIC = u'x'
 
     def __init__(self, position=None):
-        life = random.randint(Zombie.MAX_LIFE / 2, Zombie.MAX_LIFE)
+        life = random.randint(Zombie.MAX_LIFE // 2, Zombie.MAX_LIFE)
 
         dead_decoration = DeadBody('zombie remains', 'green', None)
 
