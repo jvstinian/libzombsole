@@ -13,7 +13,7 @@ import time
 import numpy as np
 
 
-class ZombsoleGymEnv(object):
+class ZombsoleGymEnv(Env):
     """The main OpenAI Gym class. It encapsulates an environment with
     arbitrary behind-the-scenes dynamics. An environment can be
     partially or fully observed.
@@ -145,7 +145,7 @@ class ZombsoleGymEnv(object):
         return observation, reward, done, truncated, info
 
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """Resets the environment to an initial state and returns an initial
         observation.
 
@@ -158,6 +158,7 @@ class ZombsoleGymEnv(object):
         Returns:
             observation (object): the initial observation.
         """
+        super().reset(seed=seed)
         self.game.__initialize_world__()
         self.reward_tracker.reset(self.game.agents, self.game.world)
         return self.get_observation(), {}
@@ -213,23 +214,21 @@ class ZombsoleGymEnv(object):
         """
         pass
 
-    def seed(self, seed=None):
-        """Sets the seed for this env's random number generator(s).
-
-        Note:
-            Some environments use multiple pseudorandom number generators.
-            We want to capture all such seeds used in order to ensure that
-            there aren't accidental correlations between multiple generators.
-
-        Returns:
-            list<bigint>: Returns the list of seeds used in this env's random
-              number generators. The first value in the list should be the
-              "main" seed, or the value which a reproducer should pass to
-              'seed'. Often, the main seed equals the provided 'seed', but
-              this won't be true if seed=None, for example.
-        """
-        # NOTE: Not currently capturing the seed information used in zombsole
-        return
+    # def seed(self, seed=None):
+    #     """Sets the seed for this env's random number generator(s).
+    #     Note:
+    #         Some environments use multiple pseudorandom number generators.
+    #         We want to capture all such seeds used in order to ensure that
+    #         there aren't accidental correlations between multiple generators.
+    #     Returns:
+    #         list<bigint>: Returns the list of seeds used in this env's random
+    #           number generators. The first value in the list should be the
+    #           "main" seed, or the value which a reproducer should pass to
+    #           'seed'. Often, the main seed equals the provided 'seed', but
+    #           this won't be true if seed=None, for example.
+    #     """
+    #     # NOTE: Not currently capturing the seed information used in zombsole
+    #     return
 
     @property
     def unwrapped(self):
@@ -400,6 +399,7 @@ register(
     id='jvstinian/Zombsole-v0', 
     entry_point='zombsole.gym_env:ZombsoleGymEnvDiscreteAction', 
     max_episode_steps=1000,
+    nondeterministic=True,
     kwargs={
         'rules_name': 'extermination',
         'player_names': [],
@@ -415,6 +415,7 @@ register(
     id='jvstinian/Zombsole-SurroundingsView-v0', 
     entry_point='zombsole.gym_env:ZombsoleGymEnvDiscreteAction', 
     max_episode_steps=1000,
+    nondeterministic=True,
     kwargs={
         'rules_name': 'extermination',
         'player_names': [],
