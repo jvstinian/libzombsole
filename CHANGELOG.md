@@ -1,3 +1,7 @@
+# 0.13.1
+
+Fixing an issue with floats rather than integers being used when generating random health levels.
+
 # 0.13.0
 
 Switching from gym to gymnasium.
