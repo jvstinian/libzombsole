@@ -2,7 +2,7 @@
 
 Updating to gymnasium 1.2.2.
 The zombsole gymnasium environment now derives from the gymnasium `Env` class as recommended by gymnasium.
-We also update the `reset` method and comment out the `seed` method.
+We also updated the `reset` method and removed the `seed` method.
 We specify the environment is nondeterministic to avoid issues with the environment checks.
 
 # 0.13.1
