@@ -1,6 +1,9 @@
 # tests/test_gym_env.py
 import pytest
-import gymnasium
+from tests.helpers import not_raises
+import gymnasium as gym
+import gymnasium.envs
+from gymnasium.utils.env_checker import check_env
 from zombsole.gym_env import ZombsoleGymEnv
 
 
@@ -46,3 +49,12 @@ def test_observations_surroundings(scope, position_encoding):
     channels = 3 if position_encoding == "channels" else 1
     assert observation.shape == (channels, surroundings_width, surroundings_width)
 
+def test_gym_make_env_v0():
+    env = gym.make("jvstinian/Zombsole-v0", render_mode=None)
+    with not_raises(Exception):
+        check_env(env.unwrapped, skip_render_check=True)
+
+def test_gym_make_env_v1():
+    env = gym.make("jvstinian/Zombsole-SurroundingsView-v0", render_mode=None)
+    with not_raises(Exception):
+        check_env(env.unwrapped, skip_render_check=True)
