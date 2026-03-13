@@ -1,14 +1,6 @@
 # tests/test_gym_env_imports.py
-from contextlib import contextmanager
 import pytest
-
-
-@contextmanager
-def not_raises(exception):
-    try:
-        yield
-    except exception as ex:
-        raise pytest.fail("DID RAISE {0}".format(ex))
+from tests.helpers import not_raises
 
 
 def test_imports():
